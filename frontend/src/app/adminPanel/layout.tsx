@@ -7,6 +7,8 @@ export const metadata: Metadata = {
     title: "Authenticated Layout metadata"
 };
 
+export const dynamic = 'force-dynamic';
+
 type Props = { children: React.ReactNode };
 
 const AuthLayout = async ({children}: Props) => {
