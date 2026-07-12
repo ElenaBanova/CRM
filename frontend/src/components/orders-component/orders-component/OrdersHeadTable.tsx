@@ -3,6 +3,7 @@
 import {useRouter, useSearchParams} from "next/navigation";
 import {urls} from "@/constants/urls";
 import "../orders-component-css/ordersComponent.css"
+import {useEffect} from "react";
 
 
 const OrdersHeadTable = () => {
@@ -11,12 +12,13 @@ const OrdersHeadTable = () => {
     const params = new URLSearchParams(searchParams);
     const orderParams = params.get("order");
 
-    if (!orderParams) {
-        params.set("order", `-_id`);
-
-        const url = `${urls.orders}?${params.toString()}`;
-        router.push(url);
-    }
+    useEffect(() => {
+        if (!orderParams) {
+            params.set("order", `-_id`);
+            const url = `${urls.orders}?${params.toString()}`;
+            router.push(url);
+        }
+    }, [orderParams]);
 
     const handleClick = (key: string) => {
 

@@ -42,11 +42,13 @@ const OrdersPage = async ({searchParams}: { searchParams: Promise<SearchParams> 
             ...(manager && {manager: `${manager}`}),
         };
 
-        const {data: orders, totalPages} = await orderService.getAll(`${page}`, query);
-        const {_id} = await authService.meServer();
-        const groups = await groupService.loadGroups();
+    const [{data: orders, totalPages}, {_id}, groups] = await Promise.all([
+        orderService.getAll(`${page}`, query),
+        authService.meServer(),
+        groupService.loadGroups(),
+    ]);
 
-        const ordersExcel: IOrder[] = [];
+    const ordersExcel: IOrder[] = [];
         if (excel) {
             const orders = await orderService.getAllForExcel(query);
             if (orders) {
