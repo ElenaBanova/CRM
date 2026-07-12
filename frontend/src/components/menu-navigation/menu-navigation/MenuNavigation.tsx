@@ -3,24 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import "../menu-navigation-css/menuNavigation.css";
-import {useEffect, useState} from "react";
-import {authService} from "@/api-services/auth.api";
 import {redirect, usePathname} from "next/navigation";
 
+type Props = {
+    name: string;
+    role: string;
+};
 
-const MenuNavigation = () => {
-    const [userData, setUserData] = useState({name: '', role: ''});
+const MenuNavigation = ({name, role}: Props) => {
     const pathname = usePathname();
-
-    useEffect(() => {
-        const fetchUserData = async () => {
-            const {name, role} = await authService.me();
-            setUserData({name, role});
-        };
-        fetchUserData().then();
-    }, []);
-
-    const {name, role} = userData;
 
     return (
         <div className='menu'>

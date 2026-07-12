@@ -1,5 +1,6 @@
 import {Metadata} from "next";
 import MenuNavigation from "@/components/menu-navigation/menu-navigation/MenuNavigation";
+import {authService} from "@/api-services/auth.api";
 
 
 export const metadata: Metadata = {
@@ -8,10 +9,12 @@ export const metadata: Metadata = {
 
 type Props = { children: React.ReactNode };
 
-const AuthLayout = ({children}: Props) => {
-        return (
+const AuthLayout = async ({children}: Props) => {
+    const {name, role} = await authService.meServer();
+
+    return (
         <>
-            <MenuNavigation/>
+            <MenuNavigation name={name} role={role}/>
             {children}
         </>
     );
