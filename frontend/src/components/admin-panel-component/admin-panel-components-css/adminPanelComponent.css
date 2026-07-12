@@ -1,0 +1,167 @@
+.list-managers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: 100px;
+    padding-right: 100px;
+    gap: 10px;
+}
+
+.manager-panel {
+    display: flex;
+    flex-direction: row;
+    align-content: start;
+    padding: 20px;
+    outline: 2px solid #43a047;
+    outline-offset: -2px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.statistic {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 10px;
+}
+
+.line-statistic-info {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    gap: 10px;
+}
+
+.create-manager {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-content: start;
+}
+
+.create-manager-button {
+    text-align: center;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s;
+    background: #43a047;
+    border-radius: 5px;
+    padding: 7px;
+    width: 100px;
+    height: 40px;
+}
+
+.manager-panel {
+    display: flex;
+    flex-direction: row;
+    align-content: start;
+    gap: 10px;
+    width: 100%;
+}
+
+.manager-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 30%;
+}
+
+.manager-button {
+    text-align: center;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s;
+    background: #43a047;
+    border-radius: 5px;
+    padding: 7px;
+    width: 100px;
+    height: 40px;
+}
+
+.basic-info {
+    width: 20%;
+}
+
+.manager-statistic {
+    width: 20%;
+}
+
+.manager-create-window {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.manager-create-form-with-button {
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    width: 50%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.manager-create-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    color: white;
+ }
+
+.create-button {
+    background-color: #43a047;
+    border-radius: 5px;
+    text-align: center;
+    padding: 7px;
+    height: 40px;
+    width: 150px;
+    cursor: pointer;
+}
+
+.create-buttons {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 2px;
+}
+
+.error-message-create-manager {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.create-label{
+    display: flex;
+    flex-direction: column;
+}
+
+.create-input {
+    height: 50px;
+    background-color: #ededed;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.manager-button:disabled {
+    color: dimgray;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+
+

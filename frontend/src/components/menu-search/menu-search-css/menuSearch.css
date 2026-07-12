@@ -1,0 +1,83 @@
+.menu-search {
+    height: 13vh;
+    padding: 10px;
+    gap: 1%;
+    display: flex;
+    flex-direction: row;
+}
+
+.menu-search-input {
+    width: 90%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 5px;
+}
+
+.search-input {
+    height: 50px;
+    background-color: #ededed;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.search-input-button {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.search-right-block {
+    width: 9%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+.span {
+    font-size: 14px;
+}
+
+.search-input-open {
+    width: 250px;
+    background-color: white;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: absolute;
+}
+
+.input-open-click {
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.input-open-click:hover {
+    background-color: rgba(67, 160, 71, 0.3);
+}
+
+.no-search {
+    width: 60px;
+    height: 60px;
+    background-color: #43a047;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+button.excel {
+    width: 60px;
+    height: 60px;
+    background-color: #43a047;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+

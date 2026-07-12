@@ -1,0 +1,13 @@
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    height: 68vh;
+}
+
+/*.order-edit-page {*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-content: center;*/
+/*    width: 100%;*/
+/*    background-color: rgba(0, 0, 0, 0.2);*/
+/*}*/

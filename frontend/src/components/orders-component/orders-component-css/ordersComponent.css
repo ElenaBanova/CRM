@@ -1,0 +1,248 @@
+/*************OrdersHeaderTable***************/
+.orders-head-table {
+    background-color: #76b852;
+    text-align: center;
+    color: white;
+}
+/*************OrdersBodyTable***************/
+tr.tr-body:nth-child(even) {
+    background-color: #ededed;
+}
+
+tr.tr-body:nth-child(odd) {
+    background-color: #dddddd;
+}
+
+tr.tr-body.active-row {
+    background-color: #43a047 !important;
+    color: white;
+}
+
+tr.tr-body:hover {
+    outline: 2px solid #43a047;
+    outline-offset: -2px;
+}
+
+.additional-window {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: #ededed;
+    outline: 2px solid #43a047;
+    outline-offset: -2px;
+}
+
+.left-side {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    width: 50%;
+}
+
+.right-side {
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    gap: 1%;
+}
+
+.comments-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 85%;
+}
+
+.comments {
+    display: flex;
+    flex-direction: column;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.comment {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 2px solid #dddddd;
+}
+
+.add-comment {
+    display: flex;
+    flex-direction: row;
+    gap: 1%;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    align-items: center;
+}
+
+.comment-input {
+    background-color: #dddddd;
+    border-radius: 5px;
+    padding: 10px;
+    width: 84%;
+}
+
+.comment-add-button {
+    text-align: center;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s;
+    background: #43a047;
+    border-radius: 5px;
+    padding: 7px;
+    width: 15%;
+    height: 40px;
+}
+
+.comment-add-button:disabled {
+    background: grey;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.edit-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 14%;
+}
+
+.button-edit {
+    background-color: #43a047;
+    border-radius: 5px;
+    text-align: center;
+    padding: 7px;
+    color: white;
+    height: 40px;
+    width: 95%;
+    cursor: pointer;
+}
+
+.button-edit:disabled {
+    background: grey;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+/*************OrderEditWindow***************/
+.order-edit-window {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.order-edit-form-with-button {
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: auto;
+    position: relative;
+}
+
+.edit-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-flow: column;
+    grid-template-rows: repeat(6, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 5px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.form-button-edit {
+    background-color: #43a047;
+    border-radius: 5px;
+    text-align: center;
+    padding: 7px;
+    height: 40px;
+    width: 150px;
+    cursor: pointer;
+}
+
+.edit-label {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-input-edit {
+    height: 50px;
+    background-color: #ededed;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.edit-input-button {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.form-edit-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    gap: 10px;
+    margin-top: 10px;
+    color: white;
+}
+
+.group-button {
+    background-color: #43a047;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    color: white;
+    padding: 1px;
+    height: 25px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.add-group-button {
+    background-color: #43a047;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    color: white;
+    padding: 1px;
+    height: 25px;
+    width: 50%;
+    cursor: pointer;
+}
+
+.edit-label-text {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: start;
+    padding: 10px;
+}
+
+.group-buttons {
+    display: flex;
+    flex-direction: row;
+}

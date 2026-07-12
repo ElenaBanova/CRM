@@ -1,0 +1,24 @@
+.pagination-page {
+    height: 6vh;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: white;
+    justify-content: center;
+    gap: 10px;
+}
+
+.button-pag {
+    background-color: #76b852;
+    border-radius: 100px;
+    cursor: pointer;
+    height: 4vh;
+    padding: 5px;
+    min-width: 4vh;
+}
+
+.button-pag.active {
+    background-color: #43a047;
+    font-weight: bold;
+}
