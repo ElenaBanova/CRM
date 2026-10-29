@@ -54,7 +54,7 @@ Example: a `PATCH /orders/:id` request first goes through the `router` (`order.r
 
 ## How It All Works (High-Level Flow)
 
-1. Anyone (without registering) should be able to submit a lead for a course.
+1. Leads (orders) are imported into the system; managers then work them through the API.
 2. An admin creates manager accounts (`POST /users`) and generates an activation / password-recovery link, which they pass to the manager through any channel (email, Telegram, etc.).
 3. A manager logs in (`POST /auth/sign-in`) and receives a token pair: `accessToken` (short-lived, sent with every request) and `refreshToken` (long-lived, only used to get a new `accessToken` once the old one expires).
 4. A manager sees the list of orders (`GET /orders`) and can pick one up — as soon as they update the order or leave a comment on it once, that order becomes "claimed" by them, and no other manager can edit it afterwards.
@@ -185,7 +185,7 @@ Base URL without Docker: `http://localhost:<PORT>` (routes are mounted with no `
 
 > `GET /users/:id` is marked in the code as accessible to any authenticated user (the admin check is commented out) — this is the current behavior, not a documentation mistake.
 
-> `GET /users` is paginated (`page`, `pageSize` query parameters). The response has the shape { totalItems, totalPages, prevPage, nextPage, data }, default pageSize is 10. The current admin is always returned first on the first page; the remaining users follow in descending `_id` order. Each user also includes:
+> `GET /users` is paginated (`page`, `pageSize` query parameters). The response has the shape `{ totalItems, totalPages, prevPage, nextPage, data }`, default `pageSize` is `10`. The current admin is always returned first on the first page; the remaining users follow in descending `_id` order. Each user also includes:
 > - `rowNumber` — the user's sequential number (based on creation order, stays the same regardless of the page);
 > - `lastLogin` — date of the user's most recent login (`null` if they have never logged in).
 >

@@ -10,7 +10,7 @@ Client application for the CRM system: login, working with leads ("orders"), com
 | **TypeScript** | typing |
 | **axios** | HTTP client (separate instances for server and client code, with an error interceptor) |
 | **Tailwind CSS 4** + plain CSS files | styling |
-| **Joi** + **react-hook-form** resolvers | form validation |
+| **Joi** | form validation |
 | **cookies-next** | storing access/refresh tokens in cookies |
 | **exceljs** | exporting the filtered orders list to `.xlsx` |
 | **sonner** | toast notifications |
