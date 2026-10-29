@@ -6,6 +6,8 @@ import {loginValidatorSchema} from "@/validators/login.validator";
 import {urls} from "@/constants/urls";
 import {setCookie} from "@/api-services/helper";
 import {redirect} from "next/navigation";
+import {isRedirectError} from "@/utils/isRedirectError";
+import {AxiosError} from "axios";
 
 
 const loginUser = async (prevState: unknown, formData: FormData) => {
@@ -30,8 +32,25 @@ const loginUser = async (prevState: unknown, formData: FormData) => {
         await setCookie('refreshToken', tokens.refreshToken);
 
         // return {success: true}
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     } catch (e) {
+        if (isRedirectError(e)) throw e;
+
+        const status = (e as AxiosError).response?.status;
+        const message = (e as AxiosError<{ message?: string }>).response?.data?.message;
+
+        if (!status || status >= 500) {
+            return {
+                error: "Server error. Please try again later or contact the administrator.",
+                values: data,
+                success: false,
+            };
+        }
+
+        if (status === 403 && message === "Account is blocked") {
+            return {error: "Your account has been blocked. Please contact the administrator."};
+        }
+
         return {error: 'Invalid email or password'};
     }
 

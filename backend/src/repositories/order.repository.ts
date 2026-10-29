@@ -49,7 +49,15 @@ class OrderRepository {
       filterObject.course_type = { $regex: query.course_type, $options: "i" };
     }
     if (query.status) {
-      filterObject.status = { $regex: query.status, $options: "i" };
+      if (query.status === "New") {
+        filterObject.$or = [
+          { status: { $regex: query.status, $options: "i" } },
+          { status: null },
+          { status: "" },
+        ];
+      } else {
+        filterObject.status = { $regex: query.status, $options: "i" };
+      }
     }
     if (query.group) {
       filterObject.group = query.group;
@@ -59,6 +67,15 @@ class OrderRepository {
     }
     if (query.manager) {
       filterObject.manager = query.manager;
+    }
+    if (query.dateFrom || query.dateTo) {
+      filterObject.created_at = {};
+      if (query.dateFrom) {
+        filterObject.created_at.$gte = `${query.dateFrom.slice(0, 10)}T00:00:00Z`;
+      }
+      if (query.dateTo) {
+        filterObject.created_at.$lte = `${query.dateTo.slice(0, 10)}T23:59:59Z`;
+      }
     }
 
     const baseOrderedIds = await Order.find({})
@@ -142,7 +159,15 @@ class OrderRepository {
       };
     }
     if (query.status) {
-      filterObjectExcel.status = { $regex: query.status, $options: "i" };
+      if (query.status === "New") {
+        filterObjectExcel.$or = [
+          { status: { $regex: query.status, $options: "i" } },
+          { status: null },
+          { status: "" },
+        ];
+      } else {
+        filterObjectExcel.status = { $regex: query.status, $options: "i" };
+      }
     }
     if (query.group) {
       filterObjectExcel.group = query.group;
@@ -155,6 +180,15 @@ class OrderRepository {
     }
     if (query.manager) {
       filterObjectExcel.manager = query.manager;
+    }
+    if (query.dateFrom || query.dateTo) {
+      filterObjectExcel.created_at = {};
+      if (query.dateFrom) {
+        filterObjectExcel.created_at.$gte = `${query.dateFrom.slice(0, 10)}T00:00:00Z`;
+      }
+      if (query.dateTo) {
+        filterObjectExcel.created_at.$lte = `${query.dateTo.slice(0, 10)}T23:59:59Z`;
+      }
     }
 
     const baseOrderedIds = await Order.find({})

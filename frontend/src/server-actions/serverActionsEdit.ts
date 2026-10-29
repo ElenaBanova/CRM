@@ -5,6 +5,8 @@ import {axiosServer} from "@/api-services/api.services";
 import {urls} from "@/constants/urls";
 import {IOrderPromise} from "@/interfaces/IOrder";
 import {IOrderUpdate} from "@/interfaces/IOrderUpdate";
+import {isRedirectError} from "@/utils/isRedirectError";
+import {AxiosError} from "axios";
 
 type OrderFormFields = 'group' | 'name' | 'surname' | 'email' | 'phone' |
     'age' | 'status' | 'sum' | 'already_paid' |
@@ -55,8 +57,19 @@ const orderEdit = async (prevState: unknown, formData: FormData) => {
     try {
         await axiosServer.patch<IOrderPromise>(urls.orders + "/" + id, data)
         return {success: true}
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
+        if (isRedirectError(e)) throw e;
+
+        const status = (e as AxiosError).response?.status;
+
+        if (!status || status >= 500) {
+            return {
+                error: "Server error. Please try again later or contact the administrator.",
+                values: data,
+                success: false,
+            };
+        }
+
         return {error: 'Unable to save changes, data entered incorrectly.', values: cleanedData, success: false};
     }
 }

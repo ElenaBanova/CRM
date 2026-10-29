@@ -28,6 +28,8 @@ const orderService = {
             if (query.status !== undefined) params.append("status", query.status);
             if (query.group !== undefined) params.append("group", query.group);
             if (query.manager !== undefined) params.append("manager", query.manager);
+            if (query.dateFrom !== undefined) params.append("dateFrom", query.dateFrom);
+            if (query.dateTo !== undefined) params.append("dateTo", query.dateTo);
         }
 
         const url = `${urls.orders}?${params.toString()}`;
@@ -63,6 +65,8 @@ const orderService = {
             if (queryExcel.status !== undefined) params.append("status", queryExcel.status);
             if (queryExcel.group !== undefined) params.append("group", queryExcel.group);
             if (queryExcel.manager !== undefined) params.append("manager", queryExcel.manager);
+            if (queryExcel.dateFrom !== undefined) params.append("dateFrom", queryExcel.dateFrom);
+            if (queryExcel.dateTo !== undefined) params.append("dateTo", queryExcel.dateTo);
         }
 
         const urlExcel = `${urls.orders}/excel?${params.toString()}`;
@@ -71,9 +75,12 @@ const orderService = {
         return await Promise.all(data.data.map(async (order) => {
             if (!order.manager && !order.group) return order;
 
-            const group = await groupService.getByIdGroup(order.group);
-            const user = await userService.getByIdServer(order.manager);
-            return {...order, group: group?.name || '', managerInfo: `${user?.name} ${user?.surname}` || ''};
+            const [group, user] = await Promise.all([
+                order.group ? groupService.getByIdGroup(order.group) : null,
+                order.manager ? userService.getByIdServer(order.manager) : null,
+            ]);
+
+            return {...order, group: group?.name || '', managerInfo: user ? `${user.name ?? ''} ${user.surname ?? ''}`.trim() : ''};
         }));
     },
 

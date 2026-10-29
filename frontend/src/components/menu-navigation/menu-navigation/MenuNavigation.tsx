@@ -19,11 +19,11 @@ const MenuNavigation = ({name, role}: Props) => {
             <div className='button-navigation'>
                 <h2 className="name">{name}</h2>
                 {role === 'admin' && pathname === '/orders' && <div className='button' style={{cursor: "pointer"}}>
-                    <Link href={'/adminPanel'}><Image
+                    <Link href={'/adminPanel?page=1'}><Image
                         src="/admin-with-cogwheels.svg" alt={`logo admin panel`} width={60} height={60}/>
                     </Link></div>}
                 {role === 'admin' && pathname === '/adminPanel' && <div className='button' style={{cursor: "pointer"}}>
-                <Link href={'/orders'}><Image
+                <Link href={'/orders?page=1&order=-_id'}><Image
                     src="/admin-with-cogwheels.svg" alt={`logo admin panel`} width={60} height={60}/>
                 </Link></div>}
                 <div className='button' onClick={() => {

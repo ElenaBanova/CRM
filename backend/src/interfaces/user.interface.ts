@@ -36,6 +36,22 @@ interface IUsersWithIndexAndLastLogin extends IBase {
   blockUser: boolean;
 }
 
+interface IUserQuery {
+  pageSize: number;
+  page: number;
+}
+
+export interface IResponseUsers {
+  users: IUserWithIndex[];
+  totalItems: number;
+}
+
 type IUserDTO = Pick<IUser, "name" | "surname" | "email">;
 
-export { IUser, IUserDTO, IUsersWithIndexAndLastLogin, IUserWithIndex };
+export {
+  IUser,
+  IUserDTO,
+  IUserQuery,
+  IUsersWithIndexAndLastLogin,
+  IUserWithIndex,
+};

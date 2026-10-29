@@ -39,6 +39,10 @@ class AuthService {
       throw new ApiError("Account is not active", StatusCodesEnum.FORBIDDEN);
     }
 
+    if (user.blockUser === true) {
+      throw new ApiError("Account is blocked", StatusCodesEnum.FORBIDDEN);
+    }
+
     const tokens = tokenService.generateTokens({
       userId: user._id,
       role: user.role,
@@ -58,7 +62,7 @@ class AuthService {
     }
 
     if (user.blockUser === true) {
-      throw new ApiError("User is blocked", StatusCodesEnum.FORBIDDEN);
+      throw new ApiError("Target user is blocked", StatusCodesEnum.FORBIDDEN);
     }
 
     const actionToken = tokenService.generateActionToken(
@@ -78,6 +82,12 @@ class AuthService {
     password: string,
   ): Promise<void> {
     const { userId } = tokenService.verifyToken(token, type);
+
+    const user = await userService.getById(userId);
+
+    if (user.blockUser === true) {
+      throw new ApiError("Target user is blocked", StatusCodesEnum.FORBIDDEN);
+    }
 
     const hashedPassword = await passwordService.hashPassword(password);
 

@@ -23,14 +23,14 @@ A CRM system for managing course-sales leads ("orders") end to end: capture lead
 - **Comment history** — a per-order activity log so managers can track every interaction with a lead.
 - **Groups** — simple named collections for organizing leads/users.
 - **Excel export** — export the filtered orders list to `.xlsx`.
-- **Account lifecycle emails** — admin-triggered account activation and password recovery via signed, expiring links.
+- **Admin-controlled accounts** — only admins create and activate accounts and handle password recovery, by sharing one-time, expiring token links through any channel (email, Telegram, etc.).
 
 ## Tech Stack
 
 | Layer | Technologies |
 | --- | --- |
 | Backend | Node.js, TypeScript, Express, MongoDB (Mongoose), JWT, Joi, bcrypt |
-| Frontend | Next.js, React, TypeScript, Tailwind CSS, axios |
+| Frontend | Next.js (App Router), React, TypeScript, Tailwind CSS, axios |
 | Infra | Docker Compose, nginx (reverse proxy) |
 
 ## Architecture
@@ -82,7 +82,7 @@ The app is then available at **http://localhost:8080** (nginx routes `/` to the 
 
 ### Running the apps individually (without Docker)
 
-See [`backend/README.md`](backend/README.md) and [`frontend/README.md`](frontend/README.md) for instructions on running each app standalone during local development.
+See [`backend/README.md`](backend/README.md) for running the backend standalone. The frontend is started with `npm install` and `npm run dev` inside the `frontend/` folder (the backend must be running).
 
 ## Environment Variables
 
@@ -100,7 +100,7 @@ All variables are defined in [`.env.example`](.env.example) at the repo root and
 | `JWT_ACTIVATE_LIFETIME` | Expiry for account-activation links |
 | `JWT_RECOVERY_SECRET` | Signing secret for password-recovery links |
 | `JWT_RECOVERY_LIFETIME` | Expiry for password-recovery links |
-| `FRONTEND_URL` | Base URL used when building activation/recovery links sent by email |
+| `FRONTEND_URL` | Base URL used to build activation/recovery links, which an admin copies and shares with the user through any channel (email, Telegram, etc.) |
 
 ## API Overview
 
@@ -119,6 +119,12 @@ Interactive Swagger/OpenAPI documentation is served by the backend at `/docs` (i
 
 ## Roles & Access Control
 
-- **admin** — manages users (create, update, role changes, block/unblock), triggers account activation and password recovery emails, and has unrestricted access to orders and groups.
+- **admin** — manages users (create, update, role changes, block/unblock), generates account-activation and password-recovery links, and has unrestricted access to orders and groups.
 - **manager** — works orders assigned to them; an unassigned order can be claimed by updating/commenting on it, after which further updates/comments are restricted to that manager.
 
+## Error Handling & Blocked Accounts
+
+- Render and server-side request errors are caught by `error.tsx` / `global-error.tsx` ("Something went wrong, contact the administrator") with a retry button.
+- An axios interceptor detects `403 "Account is blocked"` and redirects the user to `/login`; signing in with a blocked account shows a message in the form.
+- Server actions rethrow redirects and show friendly messages for backend failures.
+- Admins cannot block themselves and do not see action buttons on their own card; the admin is always listed first on the managers page.

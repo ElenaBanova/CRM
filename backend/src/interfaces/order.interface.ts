@@ -72,6 +72,8 @@ interface IOrderQuery {
   group?: string;
   order?: string;
   manager?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 interface IOrderWithIndex {

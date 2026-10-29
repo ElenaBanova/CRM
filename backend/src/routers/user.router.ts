@@ -3,6 +3,7 @@ import { Router } from "express";
 import { userController } from "../controllers/user.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
+import { ParamsValidator } from "../validators/params.validator";
 import { UserValidator } from "../validators/user.validator";
 
 const router = Router();
@@ -48,11 +49,12 @@ router.patch(
   userController.roleUpdate,
 );
 router.patch(
-  "/:id/block-unblock",
+  "/:id/:action",
   authMiddleware.checkAccessToken,
   authMiddleware.isBlock,
   authMiddleware.isAdmin,
   commonMiddleware.isIdValidate("id"),
+  commonMiddleware.isParamsValid(ParamsValidator.banUnbanAction),
   userController.blockUnblockUser,
 );
 

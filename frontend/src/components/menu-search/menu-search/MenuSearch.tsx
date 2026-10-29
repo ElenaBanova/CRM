@@ -32,6 +32,8 @@ const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
         email: searchParams.get('email') || '',
         phone: searchParams.get('phone') || '',
         age: searchParams.get('age') || '',
+        dateFrom: searchParams.get('dateFrom') || '',
+        dateTo: searchParams.get('dateTo') || '',
     });
 
     const {
@@ -78,6 +80,7 @@ const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
         dropdownRef: groupRef,
         setIsOpen: setIsOpenGroup,
     } = useDropdown();
+
 
     useEffect(() => {
         if (query.course) {
@@ -211,6 +214,12 @@ const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
         }
         if (searchParams.get('age')) {
             handleInputChange('age', 'delete');
+        }
+        if (searchParams.get("dateFrom")){
+            handleInputChange('dateFrom', 'delete');
+        }
+        if (searchParams.get("dateTo")){
+            handleInputChange('dateTo', 'delete');
         }
     }
 
@@ -465,10 +474,17 @@ const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
                         </div>
                     )}
                 </div>
-                <input className="search-input" type="date"
-                       placeholder="Start date"/>
-                <input className="search-input" type="date"
-                       placeholder="End date"/>
+                <input className="search-input"
+                       type="date"
+                       value={inputValues.dateFrom}
+                       max={inputValues.dateTo || undefined}
+                       onChange={(e)=>{handleInputChange('dateFrom', e.target.value)}}
+                />
+            <input className="search-input"
+                   type="date"
+                   value={inputValues.dateTo}
+                   min={inputValues.dateFrom || undefined}
+                   onChange={(e) => {handleInputChange('dateTo', e.target.value)}}/>
             </div>
             <div className="search-right-block">
                 <label><input className="checkbox-my" type="checkbox"

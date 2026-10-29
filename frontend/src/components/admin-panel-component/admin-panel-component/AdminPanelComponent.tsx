@@ -11,15 +11,17 @@ import {useFormState} from "react-dom";
 import {useRouter, useSearchParams} from "next/navigation";
 import {Toast} from "@/components/toast-component/Toast";
 import {userService} from "@/api-services/user.api";
+import {urls} from "@/constants/urls";
 
 interface Props {
     managers: IUsersWithStatistic[],
     statistic: IStatistic,
     activateURL?: string,
     recoveryURL?: string,
+    me: string,
 }
 
-const AdminPanelComponent: FC<Props> = ({managers, statistic, activateURL, recoveryURL}) => {
+const AdminPanelComponent: FC<Props> = ({me, managers, statistic, activateURL, recoveryURL}) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams);
@@ -68,6 +70,9 @@ const AdminPanelComponent: FC<Props> = ({managers, statistic, activateURL, recov
                 .catch(() => setToastMessage('Error copying link to clipboard.'));
         }
 
+        params.delete('activate');
+        params.delete('recovery');
+        router.push(`/adminPanel?${params.toString()}`);
     }, [activateURL, recoveryURL])
 
     const toggleCreateManager = () => {
@@ -88,8 +93,8 @@ const AdminPanelComponent: FC<Props> = ({managers, statistic, activateURL, recov
         router.push(`/adminPanel?${params.toString()}`);
     }
 
-    const toggleBunUnbanManager = async (value: string) => {
-        await userService.banUnbanManager(value);
+    const toggleBunUnbanManager = async (value: string, action: string) => {
+        await userService.banUnbanManager(value, action);
         router.refresh()
     }
 
@@ -156,7 +161,10 @@ const AdminPanelComponent: FC<Props> = ({managers, statistic, activateURL, recov
                     </div>
                 </div>
             </Form></div>}
-            {managers && managers.map(manager => <div key={manager._id} className="manager-panel">
+            {managers && managers.map(manager => {
+                const isMe = manager._id === me;
+
+                return ( <div key={manager._id} className="manager-panel">
                 <div className="basic-info">
                     <div>id: {manager.rowNumber}</div>
                     <div>email: {manager.email}</div>
@@ -172,6 +180,7 @@ const AdminPanelComponent: FC<Props> = ({managers, statistic, activateURL, recov
                     {manager.statistic.disagree >= 1 && <div>Disagree: {manager.statistic.disagree}</div>}
                     {manager.statistic.dubbing >= 1 && <div>Dubbing: {manager.statistic.dubbing}</div>}
                 </div>
+                    {!isMe && (
                 <div className="manager-buttons">
                     {!manager.isActive && <button className="manager-button" disabled={manager.blockUser}
                                                   onClick={() => toggleActivateManager('activate', manager._id)}>ACTIVATE</button>}
@@ -180,17 +189,17 @@ const AdminPanelComponent: FC<Props> = ({managers, statistic, activateURL, recov
                                 onClick={() => toggleActivateManager('recovery', manager._id)}>RECOVERY
                             PASSWORD</button>}
                     <button className="manager-button" type="button" disabled={manager.blockUser} onClick={() =>
-                        toggleBunUnbanManager(manager._id)
+                        toggleBunUnbanManager(manager._id, "ban")
                     }>
                         BAN
                     </button>
                     <button className="manager-button" type="button" disabled={!manager.blockUser} onClick={() =>
-                        toggleBunUnbanManager(manager._id)
+                        toggleBunUnbanManager(manager._id, "unban")
                     }>
                         UNBAN
                     </button>
-                </div>
-            </div>)}
+                </div>)}
+            </div>)})}
             <Toast message={toastMessage}/>
         </div>
     )

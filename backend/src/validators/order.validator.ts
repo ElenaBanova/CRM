@@ -23,8 +23,8 @@ export class OrderValidator {
   private static status = joi
     .string()
     .valid(...Object.values(StatusOrdersEnum));
-  private static sum = joi.number().min(1).max(500000);
-  private static already_paid = joi.number().min(1).max(500000);
+  private static sum = joi.number().max(500000);
+  private static already_paid = joi.number().max(500000);
   private static utm = joi.string();
   private static msg = joi.string().max(30);
 
@@ -79,6 +79,8 @@ export class OrderValidator {
         ...Object.values(OrderQueryOrderEnum),
         ...Object.values(OrderQueryOrderEnum).map((item) => `-${item}`),
       ),
+    dateFrom: joi.string().isoDate().allow(""),
+    dateTo: joi.string().isoDate().allow(""),
   });
 
   public static queryExcel = joi.object({
@@ -99,5 +101,7 @@ export class OrderValidator {
         ...Object.values(OrderQueryOrderEnum),
         ...Object.values(OrderQueryOrderEnum).map((item) => `-${item}`),
       ),
+    dateFrom: joi.string().isoDate().allow(""),
+    dateTo: joi.string().isoDate().allow(""),
   });
 }

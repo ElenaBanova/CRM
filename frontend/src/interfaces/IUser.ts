@@ -41,4 +41,12 @@ interface IUsersWithStatistic {
     blockUser: boolean;
 }
 
-export type {IUser, IUsersWithStatistic, IUsersResponseApi};
+interface IPaginatedResponseUser <T>{
+    totalItems: number;
+    totalPages: number;
+    prevPage: boolean;
+    nextPage: boolean;
+    data: T[];
+}
+
+export type {IUser, IUsersWithStatistic, IUsersResponseApi, IPaginatedResponseUser};

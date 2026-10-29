@@ -1,14 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 
+import { BanActionEnum } from "../enums/ban-action.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ITokenPayload } from "../interfaces/token.interface";
-import { IUserDTO } from "../interfaces/user.interface";
+import { IUserDTO, IUserQuery } from "../interfaces/user.interface";
 import { userService } from "../services/user.service";
 
 class UserController {
   public async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await userService.getAll();
+      const { userId } = res.locals.tokenPayload as ITokenPayload;
+      const query = req.query as any as IUserQuery;
+      const data = await userService.getAll(query, userId);
       res.status(StatusCodesEnum.OK).json(data);
     } catch (e) {
       next(e);
@@ -62,9 +65,13 @@ class UserController {
     next: NextFunction,
   ) {
     try {
-      const { id } = req.params;
+      const { id, action } = req.params;
       const { userId } = res.locals.tokenPayload as ITokenPayload;
-      const data = await userService.blockUnblockUser(id, userId);
+      const data = await userService.blockUnblockUser(
+        id,
+        userId,
+        action as BanActionEnum,
+      );
       res.status(StatusCodesEnum.OK).json(data);
     } catch (e) {
       next(e);

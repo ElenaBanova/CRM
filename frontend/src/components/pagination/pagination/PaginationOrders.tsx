@@ -1,7 +1,6 @@
 'use client'
 
-import {useRouter, useSearchParams} from "next/navigation";
-import {urls} from "@/constants/urls";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {FC, useEffect} from "react";
 import "../pagination-css/pagination.css"
 
@@ -11,6 +10,7 @@ interface Props {
 
 const PaginationOrders: FC<Props> = ({totalPages}) => {
         const router = useRouter();
+        const pathname = usePathname();
         const searchParams = useSearchParams();
         const params = new URLSearchParams(searchParams);
 
@@ -19,13 +19,13 @@ const PaginationOrders: FC<Props> = ({totalPages}) => {
         useEffect(() => {
             if (page > totalPages) {
                 params.set("page", `1`);
-                router.push(`${urls.orders}?${params.toString()}`)
+                router.push(`${pathname}?${params.toString()}`)
             }
         }, [totalPages]);
 
         if (!searchParams.get('page')) {
             params.set("page", `1`);
-            router.push(`${urls.orders}?${params.toString()}`)
+            router.push(`${pathname}?${params.toString()}`)
         }
 
         const generatePageButtons = () => {
@@ -57,7 +57,7 @@ const PaginationOrders: FC<Props> = ({totalPages}) => {
                             key={1}
                             onClick={() => {
                                 params.set("page", `${1}`);
-                                router.push(`${urls.orders}?${params.toString()}`)
+                                router.push(`${pathname}?${params.toString()}`)
                             }} disabled={page === 1}>
                         1
                     </button>)
@@ -72,7 +72,7 @@ const PaginationOrders: FC<Props> = ({totalPages}) => {
                             className={`button-pag ${page === i ? 'active' : ''}`}
                             onClick={() => {
                                 params.set("page", `${i.toString()}`);
-                                router.push(`${urls.orders}?${params.toString()}`)
+                                router.push(`${pathname}?${params.toString()}`)
                             }} disabled={page === i}>
                         {i}
                     </button>)
@@ -88,7 +88,7 @@ const PaginationOrders: FC<Props> = ({totalPages}) => {
                             key={totalPages}
                             onClick={() => {
                                 params.set("page", `${totalPages.toString()}`);
-                                router.push(`${urls.orders}?${params.toString()}`)
+                                router.push(`${pathname}?${params.toString()}`)
                             }} disabled={page === totalPages}>
                         {totalPages}
                     </button>)
@@ -101,13 +101,13 @@ const PaginationOrders: FC<Props> = ({totalPages}) => {
             <div className="pagination-page">
                 {page > 1 && <button className='button-pag' onClick={() => {
                     params.set("page", `${(--page).toString()}`);
-                    router.push(`${urls.orders}?${params.toString()}`)
+                    router.push(`${pathname}?${params.toString()}`)
                 }} disabled={page <= 1}>&lt;
                 </button>}
                 {generatePageButtons()}
                 {page < totalPages && <button className='button-pag' onClick={() => {
                     params.set("page", `${(++page).toString()}`);
-                    router.push(`${urls.orders}?${params.toString()}`)
+                    router.push(`${pathname}?${params.toString()}`)
                 }} disabled={page >= totalPages}>&gt;
                 </button>}
             </div>

@@ -88,11 +88,18 @@ class OrderService {
     }
 
     if (orderInDB.status === StatusOrdersEnum.NEW || !orderInDB.status) {
-      return await orderRepository.updateById(id, {
-        ...orderNew,
-        status: StatusOrdersEnum.IN_WORK,
-        manager: userId,
-      });
+      if (orderNew.status === null) {
+        return await orderRepository.updateById(id, {
+          ...orderNew,
+          status: StatusOrdersEnum.IN_WORK,
+          manager: userId,
+        });
+      } else {
+        return await orderRepository.updateById(id, {
+          ...orderNew,
+          manager: userId,
+        });
+      }
     }
 
     return await orderRepository.updateById(id, {

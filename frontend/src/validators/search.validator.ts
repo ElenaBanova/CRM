@@ -6,4 +6,6 @@ export const searchValidatorSchema = Joi.object({
     email: Joi.string().trim(),
     phone: Joi.string().trim(),
     age: Joi.number(),
+    dateFrom: Joi.string().isoDate().allow(''),
+    dateTo: Joi.string().isoDate().allow(''),
 })

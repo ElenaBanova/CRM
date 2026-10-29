@@ -1,7 +1,7 @@
 import axios, {AxiosError, InternalAxiosRequestConfig} from "axios";
 import {getCookie} from "@/api-services/helper";
 import {handleBlockedServer} from "@/utils/handleBlockedServer";
-import {handleBlockedClient} from "@/utils/handleBlockedClient";
+import {handleBlockedClient, handleServerErrorClient} from "@/utils/handleBlockedClient";
 
 const addAuthToken = async (reqObj: InternalAxiosRequestConfig) => {
     const token = await getCookie("accessToken");
@@ -27,6 +27,14 @@ const createErrorInterceptor =
             return Promise.reject(error);
         };
 
+export const combineHandlers =
+    (...handlers: Array<(error: AxiosError) => Promise<void>>) =>
+        async (error: AxiosError) => {
+            for (const handler of handlers) {
+                await handler(error);
+            }
+        };
+
 export const axiosServer = axios.create({
     baseURL: process.env.BASE_URL,
     headers: {'Content-Type': 'application/json'},
@@ -48,6 +56,6 @@ axiosClient.interceptors.request.use(addAuthToken);
 
 axiosClient.interceptors.response.use(
     response => response,
-    createErrorInterceptor(handleBlockedClient)
+    createErrorInterceptor(combineHandlers(handleBlockedClient, handleServerErrorClient))
 );
 

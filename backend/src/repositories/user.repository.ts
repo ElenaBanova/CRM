@@ -1,8 +1,19 @@
-import { IUser, IUserDTO, IUserWithIndex } from "../interfaces/user.interface";
+import { Types } from "mongoose";
+
+import {
+  IResponseUsers,
+  IUser,
+  IUserDTO,
+  IUserQuery,
+} from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 
 class UserRepository {
-  public async getAll(): Promise<IUserWithIndex[]> {
+  public async getAll(
+    query: IUserQuery,
+    currentUserId: string,
+  ): Promise<IResponseUsers> {
+    const skip = query.pageSize * (query.page - 1);
     const baseUsedIds = await User.find({})
       .sort({ _id: 1 })
       .select("_id")
@@ -13,12 +24,33 @@ class UserRepository {
       idToRowNumberMap.set(user._id.toString(), index + 1);
     });
 
-    const users = await User.find().select("-password").sort("-_id").lean();
+    const [rawUsers, totalItems] = await Promise.all([
+      User.aggregate([
+        {
+          $addFields: {
+            isMe: {
+              $cond: [
+                { $eq: ["$_id", new Types.ObjectId(currentUserId)] },
+                0,
+                1,
+              ],
+            },
+          },
+        },
+        { $sort: { isMe: 1, _id: -1 } },
+        { $skip: skip },
+        { $limit: Number(query.pageSize) },
+        { $project: { password: 0, isMe: 0 } },
+      ]),
+      User.countDocuments().exec(),
+    ]);
 
-    return users.map((user) => ({
+    const usersWithRowNumber = rawUsers.map((user) => ({
       ...user,
       rowNumber: idToRowNumberMap.get(user._id.toString()),
     }));
+
+    return { users: usersWithRowNumber, totalItems };
   }
 
   public create(user: IUserDTO): Promise<IUser> {

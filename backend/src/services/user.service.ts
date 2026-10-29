@@ -1,23 +1,39 @@
+import { BanActionEnum } from "../enums/ban-action.enum";
 import { RoleEnum } from "../enums/role.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiError } from "../errors/api.errors";
+import { IPaginatedResponse } from "../interfaces/paginated-response.interface";
 import {
   IUser,
   IUserDTO,
+  IUserQuery,
   IUsersWithIndexAndLastLogin,
 } from "../interfaces/user.interface";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
-  public async getAll(): Promise<IUsersWithIndexAndLastLogin[]> {
-    const users = await userRepository.getAll();
+  public async getAll(
+    query: IUserQuery,
+    currentUserId: string,
+  ): Promise<IPaginatedResponse<IUsersWithIndexAndLastLogin>> {
+    const { users, totalItems } = await userRepository.getAll(
+      query,
+      currentUserId,
+    );
 
+    const totalPages = Math.ceil(totalItems / query.pageSize);
     if (!users) {
-      return [];
+      return {
+        totalItems,
+        totalPages,
+        prevPage: !!(query.page - 1),
+        nextPage: query.page + 1 <= totalPages,
+        data: [],
+      };
     }
 
-    return await Promise.all(
+    const data = await Promise.all(
       users.map(async (user) => {
         const latestToken = await tokenRepository.findByParams({
           _userId: user._id,
@@ -29,6 +45,14 @@ class UserService {
         } as IUsersWithIndexAndLastLogin;
       }),
     );
+
+    return {
+      totalItems,
+      totalPages,
+      prevPage: !!(query.page - 1),
+      nextPage: query.page + 1 <= totalPages,
+      data,
+    };
   }
 
   public async create(user: IUserDTO): Promise<IUser> {
@@ -77,7 +101,11 @@ class UserService {
     return await userRepository.updateById(id, { role: RoleEnum.ADMIN });
   }
 
-  public async blockUnblockUser(id: string, userId: string): Promise<IUser> {
+  public async blockUnblockUser(
+    id: string,
+    userId: string,
+    action: BanActionEnum,
+  ): Promise<IUser> {
     const user = await userRepository.getById(id);
 
     if (!user) {
@@ -88,16 +116,14 @@ class UserService {
       throw new ApiError("No permitted", StatusCodesEnum.FORBIDDEN);
     }
 
-    if (!user.isActive) {
+    if (action === BanActionEnum.BAN) {
       return await userService.updateById(id, {
-        isActive: true,
-        blockUser: false,
+        blockUser: true,
       });
     }
 
     return await userService.updateById(id, {
-      isActive: false,
-      blockUser: true,
+      blockUser: false,
     });
   }
 }

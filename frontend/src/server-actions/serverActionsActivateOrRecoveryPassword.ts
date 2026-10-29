@@ -4,6 +4,8 @@ import {axiosServer} from "@/api-services/api.services";
 import {urls} from "@/constants/urls";
 import {passwordValidatorSchema} from "@/validators/password.validator";
 import {redirect} from "next/navigation";
+import {isRedirectError} from "@/utils/isRedirectError";
+import {AxiosError} from "axios";
 
 const activateOrRecoveryPassword = async (prevState: unknown, formData: FormData) => {
     const typeAction = formData.get('typeAction');
@@ -32,8 +34,20 @@ const activateOrRecoveryPassword = async (prevState: unknown, formData: FormData
         if (typeAction === 'recovery') {
             await axiosServer.post<void>(urls.auth.recoveryPassword + "/" + `${token}`, {password: data.password})
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+         
     } catch (e) {
+        if (isRedirectError(e)) throw e;
+
+        const status = (e as AxiosError).response?.status;
+
+        if (!status || status >= 500) {
+            return {
+                error: "Server error. Please try again later or contact the administrator.",
+                values: data,
+                success: false,
+            };
+        }
+
         return {error: 'Unable to save changes, data entered incorrectly.', values: data, success: false};
     }
 

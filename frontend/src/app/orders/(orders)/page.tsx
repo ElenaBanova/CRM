@@ -26,6 +26,8 @@ const OrdersPage = async ({searchParams}: { searchParams: Promise<SearchParams> 
         const group = params.group;
         const manager = params.manager;
         const excel = params.excel;
+        const dateFrom = params.dateFrom;
+        const dateTo = params.dateTo;
 
         const query: IOrderQuery = {
             order: `${order}`,
@@ -40,6 +42,8 @@ const OrdersPage = async ({searchParams}: { searchParams: Promise<SearchParams> 
             ...(status && {status: `${status}`}),
             ...(group && {group: `${group}`}),
             ...(manager && {manager: `${manager}`}),
+            ...(dateTo && {dateTo: `${dateTo}`}),
+            ...(dateFrom && {dateFrom: `${dateFrom}`}),
         };
 
     const [{data: orders, totalPages}, {_id}, groups] = await Promise.all([
