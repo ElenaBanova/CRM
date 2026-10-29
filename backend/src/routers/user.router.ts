@@ -13,6 +13,7 @@ router.get(
   authMiddleware.checkAccessToken,
   authMiddleware.isBlock,
   authMiddleware.isAdmin,
+  commonMiddleware.query(UserValidator.query),
   userController.getAll,
 );
 router.post(

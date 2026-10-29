@@ -4,7 +4,6 @@ A CRM system for managing course-sales leads ("orders") end to end: capture lead
 
 ## Screenshots
 
-> Screenshots will be added here. Drop image files into `docs/screenshots/` and they will render below.
 
 | Login | Orders list |
 | --- | --- |
@@ -16,7 +15,7 @@ A CRM system for managing course-sales leads ("orders") end to end: capture lead
 
 ## Key Features
 
-- **Public lead capture** — anyone can submit a lead through the `POST /orders` endpoint, no authentication required.
+[//]: # (- **Public lead capture** — anyone can submit a lead through the `POST /orders` endpoint, no authentication required.)
 - **JWT authentication** — short-lived access tokens plus a refresh-token flow.
 - **Role-based access control** — `admin` and `manager` roles with different permissions.
 - **Order lifecycle** — leads move through `New → In work → Agree / Disagree / Dubbing`, with manager assignment and reassignment protection.
@@ -66,12 +65,12 @@ nginx is the single public entry point (port `8080`). It routes `/` to the Next.
 ### Prerequisites
 
 - [Docker](https://www.docker.com/) and Docker Compose
-- Node.js (only needed if you want to run an app outside Docker) and a MongoDB instance
+- Node.js (only needed if you want to run an app outside Docker) and MongoDB (local or a free MongoDB Atlas cluster)
 
 ### Quick start (Docker Compose)
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/ElenaBanova/CRM.git
 cd CRM
 cp .env.example .env
 # fill in the values in .env — see Environment Variables below
@@ -115,7 +114,7 @@ The API is mounted at `/api` (via nginx) and split into four resources:
 
 For the full endpoint reference (exact routes, middleware chains, and request/response shapes), see [`backend/README.md`](backend/README.md).
 
-Interactive Swagger/OpenAPI documentation is served by the backend at `/docs` (i.e. **http://localhost:8080/api/docs/** via nginx, or directly on the backend's port **http://localhost:5000/docs/**).
+Interactive Swagger/OpenAPI documentation is served by the backend at `/docs` (i.e. **http://localhost:8080/api/docs/** via nginx, or directly on the backend's port **http://localhost:5000/docs/** when running the backend without Docker).
 
 ## Roles & Access Control
 
@@ -125,6 +124,7 @@ Interactive Swagger/OpenAPI documentation is served by the backend at `/docs` (i
 ## Error Handling & Blocked Accounts
 
 - Render and server-side request errors are caught by `error.tsx` / `global-error.tsx` ("Something went wrong, contact the administrator") with a retry button.
-- An axios interceptor detects `403 "Account is blocked"` and redirects the user to `/login`; signing in with a blocked account shows a message in the form.
+- Blocked accounts get `403 "Account is blocked"`: both on sign-in (the message is shown in the login form) and on any request with an active session (an axios interceptor redirects the user to `/login`).
+- Activation/recovery links for a blocked user return `403 "Target user is blocked"`.
 - Server actions rethrow redirects and show friendly messages for backend failures.
-- Admins cannot block themselves and do not see action buttons on their own card; the admin is always listed first on the managers page.
+- Admins cannot block themselves (`403 "No permitted"`) and do not see action buttons on their own card; the admin is always listed first on the managers page.

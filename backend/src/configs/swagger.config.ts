@@ -52,6 +52,20 @@ const userWithLastLoginSchema: OpenAPIV3.SchemaObject = {
   ],
 };
 
+const paginatedUsersSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  properties: {
+    totalItems: { type: "integer" },
+    totalPages: { type: "integer" },
+    prevPage: { type: "boolean" },
+    nextPage: { type: "boolean" },
+    data: {
+      type: "array",
+      items: { $ref: "#/components/schemas/UserWithLastLogin" },
+    },
+  },
+};
+
 const groupSchema: OpenAPIV3.SchemaObject = {
   type: "object",
   properties: {
@@ -89,7 +103,7 @@ const orderSchema: OpenAPIV3.SchemaObject = {
       nullable: true,
       description: "ObjectId of the assigned User (manager).",
     },
-    createdAt: { type: "string", format: "date-time" },
+    created_at: { type: "string", format: "date-time" },
     updatedAt: { type: "string", format: "date-time" },
   },
 };
@@ -292,6 +306,7 @@ export const openApiDocument: OpenAPIV3.Document = {
       TokenPair: tokenPairSchema,
       User: userSchema,
       UserWithLastLogin: userWithLastLoginSchema,
+      PaginatedUsers: paginatedUsersSchema,
       Group: groupSchema,
       Order: orderSchema,
       OrderWithIndex: orderWithIndexSchema,
@@ -362,8 +377,8 @@ export const openApiDocument: OpenAPIV3.Document = {
       UserCreateRequest: {
         type: "object",
         properties: {
-          name: { type: "string", maxLength: 10 },
-          surname: { type: "string", maxLength: 10 },
+          name: { type: "string", maxLength: 30 },
+          surname: { type: "string", maxLength: 30 },
           email: { type: "string", format: "email" },
         },
         required: ["name", "surname", "email"],
@@ -457,6 +472,15 @@ export const openApiDocument: OpenAPIV3.Document = {
           },
           "400": errorResponses.BadRequest,
           "401": errorResponses.Unauthorized,
+          "403": {
+            description:
+              'Account not activated ("Account is not active") or blocked ("Account is blocked").',
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
         },
       },
     },
@@ -507,7 +531,8 @@ export const openApiDocument: OpenAPIV3.Document = {
     "/auth/activate/{id}": {
       post: {
         tags: ["Auth"],
-        summary: "Generate an account-activation link for a user (admin only)",
+        summary:
+          "Generate an account-activation link for a user (admin only), link is shared by the admin manually, no email is sent",
         security: [{ bearerAuth: [] }],
         parameters: [idParam],
         responses: {
@@ -520,7 +545,15 @@ export const openApiDocument: OpenAPIV3.Document = {
           },
           "400": errorResponses.BadRequest,
           "401": errorResponses.Unauthorized,
-          "403": errorResponses.Forbidden,
+          "403": {
+            description:
+              'Not an admin, session blocked ("Account is blocked"), or the target user is blocked ("Target user is blocked").',
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
           "404": errorResponses.NotFound,
         },
       },
@@ -528,7 +561,8 @@ export const openApiDocument: OpenAPIV3.Document = {
     "/auth/recovery/{id}": {
       post: {
         tags: ["Auth"],
-        summary: "Generate a password-recovery link for a user (admin only)",
+        summary:
+          "Generate a password-recovery link for a user (admin only), link is shared by the admin manually, no email is sent",
         security: [{ bearerAuth: [] }],
         parameters: [idParam],
         responses: {
@@ -541,7 +575,15 @@ export const openApiDocument: OpenAPIV3.Document = {
           },
           "400": errorResponses.BadRequest,
           "401": errorResponses.Unauthorized,
-          "403": errorResponses.Forbidden,
+          "403": {
+            description:
+              'Not an admin, session blocked ("Account is blocked"), or the target user is blocked ("Target user is blocked").',
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error" },
+              },
+            },
+          },
           "404": errorResponses.NotFound,
         },
       },
@@ -623,17 +665,28 @@ export const openApiDocument: OpenAPIV3.Document = {
     "/users": {
       get: {
         tags: ["Users"],
-        summary: "List all users (admin only)",
+        summary: "List users, paginated (admin only)",
+        description:
+          "The current admin is listed first on page 1 (and does not reappear on later pages).",
         security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: "page",
+            in: "query",
+            schema: { type: "integer", minimum: 1, default: 1 },
+          },
+          {
+            name: "pageSize",
+            in: "query",
+            schema: { type: "integer", minimum: 1, default: 10 },
+          },
+        ],
         responses: {
           "200": {
-            description: "Array of users, including last-login timestamp.",
+            description: "Paginated users with rowNumber and lastLogin.",
             content: {
               "application/json": {
-                schema: {
-                  type: "array",
-                  items: { $ref: "#/components/schemas/UserWithLastLogin" },
-                },
+                schema: { $ref: "#/components/schemas/PaginatedUsers" },
               },
             },
           },
@@ -739,27 +792,34 @@ export const openApiDocument: OpenAPIV3.Document = {
         },
       },
     },
-    "/users/{id}/block-unblock": {
+    "/users/{id}/{action}": {
       patch: {
         tags: ["Users"],
-        summary:
-          "Toggle a user's blocked status (admin only, cannot block self)",
+        summary: "Ban or unban a user (admin only, cannot target yourself)",
         security: [{ bearerAuth: [] }],
-        parameters: [idParam],
+        parameters: [
+          idParam,
+          {
+            name: "action",
+            in: "path",
+            required: true,
+            schema: { type: "string", enum: ["ban", "unban"] },
+          },
+        ],
         responses: {
           "200": {
-            description: "User with toggled blockUser flag.",
+            description: "User with updated blockUser flag.",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/User" },
               },
             },
           },
-          "400": errorResponses.BadRequest,
+          "400": errorResponses.BadRequest, // invalid id/action, or user not found
           "401": errorResponses.Unauthorized,
           "403": {
             description:
-              "Insufficient permission, blocked account, or attempting to block your own account.",
+              'Not an admin, session is blocked ("Account is blocked"), or admin targets own account ("No permitted").',
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/Error" },

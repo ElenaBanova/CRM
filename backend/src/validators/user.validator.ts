@@ -18,4 +18,9 @@ export class UserValidator {
     surname: this.surname,
     email: this.email,
   });
+
+  public static query = joi.object({
+    pageSize: joi.number().min(1).default(10),
+    page: joi.number().min(1).default(1),
+  });
 }
