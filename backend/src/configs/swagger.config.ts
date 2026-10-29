@@ -234,6 +234,18 @@ const orderQueryParameters: OpenAPIV3.ParameterObject[] = [
     description:
       'Sort field, one of the OrderQueryOrderEnum values (`_id`, `name`, `surname`, `email`, `phone`, `age`, `course`, `course_format`, `course_type`, `status`, `sum`, `already_paid`, `created_at`, `group`, `manager`). Prefix with "-" for descending order, e.g. "-created_at".',
   },
+  {
+    name: "dateFrom",
+    in: "query",
+    schema: { type: "string", format: "date" },
+    description: "Only orders created on or after this date (ISO).",
+  },
+  {
+    name: "dateTo",
+    in: "query",
+    schema: { type: "string", format: "date" },
+    description: "Only orders created on or before this date (ISO).",
+  },
 ];
 
 const idParam: OpenAPIV3.ParameterObject = {
@@ -386,8 +398,8 @@ export const openApiDocument: OpenAPIV3.Document = {
       UserUpdateRequest: {
         type: "object",
         properties: {
-          name: { type: "string", maxLength: 10 },
-          surname: { type: "string", maxLength: 10 },
+          name: { type: "string", maxLength: 30 },
+          surname: { type: "string", maxLength: 30 },
           email: { type: "string", format: "email" },
         },
       },
@@ -442,7 +454,7 @@ export const openApiDocument: OpenAPIV3.Document = {
       CommentCreateRequest: {
         type: "object",
         properties: {
-          comment: { type: "string", minLength: 1, maxLength: 25 },
+          comment: { type: "string", minLength: 1, maxLength: 100 },
         },
         required: ["comment"],
       },

@@ -102,19 +102,19 @@ The `.env` file must live at the **repo root** (one level above `backend/`), bec
 
 The template is [`.env.example`](../.env.example) at the repo root.
 
-| Variable | What it is | Example                         |
-| --- | --- |---------------------------------|
-| `PORT` | port Express listens on | `5000`                          |
-| `MONGO_URI` | MongoDB connection string | `mongodb://localhost:27017/crm` |
-| `JWT_ACCESS_SECRET` | signing secret for access tokens | any long random string          |
-| `JWT_REFRESH_SECRET` | signing secret for refresh tokens | any long random string          |
-| `JWT_ACCESS_LIFETIME` | access token lifetime | `10m`                           |
-| `JWT_REFRESH_LIFETIME` | refresh token lifetime | `1d`                             |
-| `JWT_ACTIVATE_SECRET` | signing secret for account-activation links | any long random string          |
-| `JWT_ACTIVATE_LIFETIME` | expiry for activation links | `30m`                           |
-| `JWT_RECOVERY_SECRET` | signing secret for password-recovery links | any long random string          |
-| `JWT_RECOVERY_LIFETIME` | expiry for recovery links | `30m`                           |
-| `FRONTEND_URL` | base URL for the frontend, used to build activation/recovery links shared by an admin through any channel | `http://localhost:3000`         |
+| Variable                | What it is | Example                           |
+|-------------------------| --- |-----------------------------------|
+| `PORT`                  | port Express listens on | `5000`                            |
+| `MONGO_URI`             | MongoDB connection string | `mongodb://localhost:27017/crm`, `mongodb+srv://<user>:<pass>@<cluster>/crm` |
+| `JWT_ACCESS_SECRET`     | signing secret for access tokens | any long random string            |
+| `JWT_REFRESH_SECRET`    | signing secret for refresh tokens | any long random string            |
+| `JWT_ACCESS_LIFETIME`   | access token lifetime | `10m`                             |
+| `JWT_REFRESH_LIFETIME`  | refresh token lifetime | `1d`                              |
+| `JWT_ACTIVATE_SECRET`   | signing secret for account-activation links | any long random string            |
+| `JWT_ACTIVATE_LIFETIME` | expiry for activation links | `30m`                             |
+| `JWT_RECOVERY_SECRET`   | signing secret for password-recovery links | any long random string            |
+| `JWT_RECOVERY_LIFETIME` | expiry for recovery links | `30m`                             |
+| `FRONTEND_URL`          | base URL for the frontend, used to build activation/recovery links shared by an admin through any channel | `http://localhost:3000`           |
 
 > Secrets (`JWT_*_SECRET`) are just arbitrary strings the server uses to sign tokens. Never commit real `.env` values to git — the file is already listed in `.gitignore`.
 
@@ -128,6 +128,10 @@ The project uses **JWT (JSON Web Token)** — instead of server-side sessions, t
 Middleware chain (file `src/middlewares/auth.middleware.ts`):
 1. `checkAccessToken` / `checkRefreshToken` — the token exists and is signed with the correct secret.
 2. `isBlock` — the user doesn't have the `blockUser` flag set (accounts blocked by an admin can't do anything). A blocked account receives `403 "Account is blocked"`.
+   Related 403 messages:
+    - `"Account is blocked"` — a blocked user signs in (`POST /auth/sign-in`) or sends any request with an existing token;
+    - `"Target user is blocked"` — an admin generates an activation/recovery link (`POST /auth/activate/:id`, `POST /auth/recovery/:id`) for a blocked user;
+    - `"No permitted"` — an admin tries to ban/unban their own account (`PATCH /users/:id/:action`).
 3. `isAdmin` — used wherever the `admin` role specifically is required.
 4. `managerValid` (orders only) — if an order is already claimed by a manager, only that manager can edit it; if the order is unclaimed, the first manager to touch it claims it.
 
@@ -181,7 +185,7 @@ Base URL without Docker: `http://localhost:<PORT>` (routes are mounted with no `
 
 > `GET /users/:id` is marked in the code as accessible to any authenticated user (the admin check is commented out) — this is the current behavior, not a documentation mistake.
 
-> `GET /users` is paginated (`page`, `pageSize` query parameters). The response has the shape `{ users, totalItems }`. The current admin is always returned first on the first page; the remaining users follow in descending `_id` order. Each user also includes:
+> `GET /users` is paginated (`page`, `pageSize` query parameters). The response has the shape { totalItems, totalPages, prevPage, nextPage, data }, default pageSize is 10. The current admin is always returned first on the first page; the remaining users follow in descending `_id` order. Each user also includes:
 > - `rowNumber` — the user's sequential number (based on creation order, stays the same regardless of the page);
 > - `lastLogin` — date of the user's most recent login (`null` if they have never logged in).
 >

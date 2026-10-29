@@ -22,7 +22,7 @@ A CRM system for managing course-sales leads ("orders") end to end: capture lead
 - **Comment history** — a per-order activity log so managers can track every interaction with a lead.
 - **Groups** — simple named collections for organizing leads/users.
 - **Excel export** — export the filtered orders list to `.xlsx`.
-- **Admin-controlled accounts** — only admins create and activate accounts and handle password recovery, by sharing one-time, expiring token links through any channel (email, Telegram, etc.).
+- **Admin-controlled accounts** — only admins create and activate accounts and handle password recovery, by sharing expiring token links through any channel (email, Telegram, etc.).
 
 ## Tech Stack
 
@@ -100,17 +100,19 @@ All variables are defined in [`.env.example`](.env.example) at the repo root and
 | `JWT_RECOVERY_SECRET` | Signing secret for password-recovery links |
 | `JWT_RECOVERY_LIFETIME` | Expiry for password-recovery links |
 | `FRONTEND_URL` | Base URL used to build activation/recovery links, which an admin copies and shares with the user through any channel (email, Telegram, etc.) |
+| `BASE_URL` | Backend API base URL used by the frontend (server-side). In Docker: `http://backend:5000` |
+| `ACCESS_LIFETIME` | Lifetime of the access-token cookie on the frontend, in seconds (should match `JWT_ACCESS_LIFETIME`, e.g. `600` for 10 minutes) |
 
 ## API Overview
 
 The API is mounted at `/api` (via nginx) and split into four resources:
 
-| Resource | Base path | Access |
-| --- | --- | --- |
-| Auth | `/auth` | Public sign-in/refresh; admin-triggered activation & recovery |
-| Users | `/users` | Admin only |
-| Groups | `/groups` | Authenticated |
-| Orders (+ Comments) | `/orders` | Create is public (lead capture); read/update/comment require auth, with manager-assignment restrictions |
+| Resource | Base path | Access                                                                 |
+| --- | --- |------------------------------------------------------------------------|
+| Auth | `/auth` | Public sign-in/refresh; admin-triggered activation & recovery          |
+| Users | `/users` | Admin only                                                             |
+| Groups | `/groups` | Authenticated                                                          |
+| Orders (+ Comments) | `/orders` | Read/update/comment require auth, with manager-assignment restrictions |
 
 For the full endpoint reference (exact routes, middleware chains, and request/response shapes), see [`backend/README.md`](backend/README.md).
 
