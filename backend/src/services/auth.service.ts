@@ -24,8 +24,12 @@ class AuthService {
       );
     }
 
-    if (!user.isActive) {
-      throw new ApiError("Account is not active", StatusCodesEnum.FORBIDDEN);
+    if (!user.isActive || !user.password) {
+      console.warn(`Sign-in attempt by not activated user: ${user._id}`);
+      throw new ApiError(
+        "Invalid email or password",
+        StatusCodesEnum.UNAUTHORIZED,
+      );
     }
 
     const isValidPassword = await passwordService.comparePassword(

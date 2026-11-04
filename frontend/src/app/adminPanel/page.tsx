@@ -7,6 +7,12 @@ import PaginationOrders from "@/components/pagination/pagination/PaginationOrder
 import {redirect} from "next/navigation";
 
 const AdminPanel = async ({searchParams}: { searchParams: Promise<SearchParams> }) => {
+    const  {_id, role} = await authService.meServer();
+
+    if (role !== 'admin') {
+        redirect('/orders?page=1&order=-_id&denied=admin');
+    }
+
     const params = await searchParams;
     const activate = params.activate || '';
     const recovery = params.recovery || '';
@@ -14,11 +20,6 @@ const AdminPanel = async ({searchParams}: { searchParams: Promise<SearchParams> 
 
     const {data: users, totalPages} = await userService.loadManager(`${page}`);
     const ordersStatistic = await orderService.getByOrdersStatistic();
-    const  {_id, role} = await authService.meServer();
-
-    if (role !== 'admin') {
-        redirect('/orders?page=1&order=-_id&denied=admin');
-    }
 
     let activateURL: string = '';
     if (activate) {

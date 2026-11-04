@@ -41,7 +41,7 @@ const loginUser = async (prevState: unknown, formData: FormData) => {
 
         if (!status || status >= 500) {
             return {
-                error: "Server error. Please try again later or contact the administrator.",
+                error: "Please try again later or contact the administrator.",
                 values: data,
                 success: false,
             };
@@ -49,13 +49,6 @@ const loginUser = async (prevState: unknown, formData: FormData) => {
 
         if (status === 403 && message === "Account is blocked") {
             return {error: "Your account has been blocked. Please contact the administrator."};
-        }
-
-        if (status === 403 && message === "Account is not active") {
-            return {
-                error: "Your account hasn’t been activated yet. Open the activation link from your administrator to set a password.",
-                values: data,
-            };
         }
 
         return {error: 'Invalid email or password'};

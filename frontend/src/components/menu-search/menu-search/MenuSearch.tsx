@@ -247,6 +247,15 @@ const MenuSearch: FC<Props> = ({groups, query, userId}) => {
         setToastKey((k) => k + 1);
     };
 
+    useEffect(() => {
+        if (searchParams.get('denied')) {
+            showToast("Access denied: the admin panel is available to administrators only.");
+
+            params.delete('denied');
+            window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
+        }
+    }, []);
+
     return (
         <div className="menu-search">
             <div className="menu-search-input">
