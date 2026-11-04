@@ -56,7 +56,7 @@ class OrderRepository {
           { status: "" },
         ];
       } else {
-        filterObject.status = { $regex: query.status, $options: "i" };
+        filterObject.status = { $regex: `^${query.status}$`, $options: "i" };
       }
     }
     if (query.group) {
@@ -166,7 +166,10 @@ class OrderRepository {
           { status: "" },
         ];
       } else {
-        filterObjectExcel.status = { $regex: query.status, $options: "i" };
+        filterObjectExcel.status = {
+          $regex: `^${query.status}$`,
+          $options: "i",
+        };
       }
     }
     if (query.group) {

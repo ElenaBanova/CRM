@@ -23,11 +23,11 @@ router.get(
   commonMiddleware.query(OrderValidator.queryExcel),
   orderController.getAllForExcel,
 );
-// router.post(
-//   "/",
-//   commonMiddleware.validateBody(OrderValidator.create),
-//   orderController.create,
-// );
+router.post(
+  "/",
+  commonMiddleware.validateBody(OrderValidator.create),
+  orderController.create,
+);
 router.get(
   "/:id",
   authMiddleware.checkAccessToken,

@@ -8,7 +8,6 @@ import {authService} from "@/api-services/auth.api";
 import MenuSearch from "@/components/menu-search/menu-search/MenuSearch";
 import {groupService} from "@/api-services/group.api";
 import {IOrderQuery} from "@/interfaces/IOrderQuery";
-import {IOrder} from "@/interfaces/IOrder";
 
 const OrdersPage = async ({searchParams}: { searchParams: Promise<SearchParams> }) => {
         const params = await searchParams;
@@ -25,7 +24,6 @@ const OrdersPage = async ({searchParams}: { searchParams: Promise<SearchParams> 
         const status = params.status;
         const group = params.group;
         const manager = params.manager;
-        const excel = params.excel;
         const dateFrom = params.dateFrom;
         const dateTo = params.dateTo;
 
@@ -52,19 +50,9 @@ const OrdersPage = async ({searchParams}: { searchParams: Promise<SearchParams> 
         groupService.loadGroups(),
     ]);
 
-    const ordersExcel: IOrder[] = [];
-        if (excel) {
-            const orders = await orderService.getAllForExcel(query);
-            if (orders) {
-                orders.map(order => {
-                    ordersExcel.push(order);
-                });
-            }
-        }
-
         return (
             <div className="orders-page">
-                <MenuSearch groups={groups} query={query} userId={_id} orders={ordersExcel}/>
+                <MenuSearch groups={groups} query={query} userId={_id}/>
                 <table className="orders-table">
                     <OrdersHeadTable/>
                     <OrdersBodyTable orders={orders} userId={_id} groups={groups}/>

@@ -1,7 +1,17 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect, FC} from 'react';
 
-export const Toast = ({ message }: { message: string | null }) => {
+interface Props {
+    message: string | null;
+    type?: "success" | "error";
+}
+
+export const Toast: FC<Props> = ({ message, type = "success" }) => {
     const [show, setShow] = useState(false);
+
+    const toastStyles = {
+        success: "bg-[#43a047]",
+        error: "bg-red-500",
+    };
 
     useEffect(() => {
         if (message) {
@@ -14,7 +24,7 @@ export const Toast = ({ message }: { message: string | null }) => {
     if (!show) return null;
 
     return (
-        <div className="fixed bottom-4 right-4 bg-[#43a047] text-white px-4 py-2 rounded">
+        <div className={`fixed bottom-4 right-4 ${toastStyles[type]} text-white px-4 py-2 rounded`}>
             {message}
         </div>
     );

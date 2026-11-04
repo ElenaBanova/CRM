@@ -410,26 +410,26 @@ export const openApiDocument: OpenAPIV3.Document = {
         },
         required: ["name"],
       },
-      // OrderCreateRequest: {
-      //   type: "object",
-      //   description:
-      //     "All fields are optional; used by the public lead-capture form.",
-      //   properties: {
-      //     name: { type: "string" },
-      //     surname: { type: "string" },
-      //     email: { type: "string", format: "email" },
-      //     phone: { type: "string" },
-      //     age: { type: "integer", minimum: 2, maximum: 100 },
-      //     course: { $ref: "#/components/schemas/CoursesEnum" },
-      //     course_format: { $ref: "#/components/schemas/FormatCoursesEnum" },
-      //     course_type: { $ref: "#/components/schemas/TypeCoursesEnum" },
-      //     sum: { type: "number", minimum: 1, maximum: 500000 },
-      //     already_paid: { type: "number", minimum: 1, maximum: 500000 },
-      //     utm: { type: "string" },
-      //     msg: { type: "string", maxLength: 30 },
-      //     status: { $ref: "#/components/schemas/StatusOrdersEnum" },
-      //   },
-      // },
+      OrderCreateRequest: {
+        type: "object",
+        description:
+          "All fields are optional; used by the public lead-capture form.",
+        properties: {
+          name: { type: "string" },
+          surname: { type: "string" },
+          email: { type: "string", format: "email" },
+          phone: { type: "string" },
+          age: { type: "integer", minimum: 2, maximum: 100 },
+          course: { $ref: "#/components/schemas/CoursesEnum" },
+          course_format: { $ref: "#/components/schemas/FormatCoursesEnum" },
+          course_type: { $ref: "#/components/schemas/TypeCoursesEnum" },
+          sum: { type: "number", minimum: 1, maximum: 500000 },
+          already_paid: { type: "number", minimum: 1, maximum: 500000 },
+          utm: { type: "string" },
+          msg: { type: "string", maxLength: 30 },
+          status: { $ref: "#/components/schemas/StatusOrdersEnum" },
+        },
+      },
       OrderUpdateRequest: {
         type: "object",
         properties: {
@@ -943,29 +943,29 @@ export const openApiDocument: OpenAPIV3.Document = {
           "403": errorResponses.Forbidden,
         },
       },
-      // post: {
-      //   tags: ["Orders"],
-      //   summary: "Create an order (public lead-capture form, no auth required)",
-      //   requestBody: {
-      //     required: true,
-      //     content: {
-      //       "application/json": {
-      //         schema: { $ref: "#/components/schemas/OrderCreateRequest" },
-      //       },
-      //     },
-      //   },
-      //   responses: {
-      //     "201": {
-      //       description: "Order created.",
-      //       content: {
-      //         "application/json": {
-      //           schema: { $ref: "#/components/schemas/Order" },
-      //         },
-      //       },
-      //     },
-      //     "400": errorResponses.BadRequest,
-      //   },
-      // },
+      post: {
+        tags: ["Orders"],
+        summary: "Create an order (public lead-capture form, no auth required)",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/OrderCreateRequest" },
+            },
+          },
+        },
+        responses: {
+          "201": {
+            description: "Order created.",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Order" },
+              },
+            },
+          },
+          "400": errorResponses.BadRequest,
+        },
+      },
     },
     "/orders/excel": {
       get: {

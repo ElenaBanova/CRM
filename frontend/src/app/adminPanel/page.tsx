@@ -4,6 +4,7 @@ import {orderService} from "@/api-services/order.api";
 import {SearchParams} from "next/dist/server/request/search-params";
 import {authService} from "@/api-services/auth.api";
 import PaginationOrders from "@/components/pagination/pagination/PaginationOrders";
+import {redirect} from "next/navigation";
 
 const AdminPanel = async ({searchParams}: { searchParams: Promise<SearchParams> }) => {
     const params = await searchParams;
@@ -13,7 +14,11 @@ const AdminPanel = async ({searchParams}: { searchParams: Promise<SearchParams> 
 
     const {data: users, totalPages} = await userService.loadManager(`${page}`);
     const ordersStatistic = await orderService.getByOrdersStatistic();
-    const  {_id} = await authService.meServer();
+    const  {_id, role} = await authService.meServer();
+
+    if (role !== 'admin') {
+        redirect('/orders?page=1&order=-_id&denied=admin');
+    }
 
     let activateURL: string = '';
     if (activate) {

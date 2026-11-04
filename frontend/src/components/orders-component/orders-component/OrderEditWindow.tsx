@@ -13,6 +13,8 @@ import {IOrderPromise} from "@/interfaces/IOrder";
 import {groupService} from "@/api-services/group.api";
 import {groupValidatorSchema} from "@/validators/group.validator";
 import {ordersPageAction} from "@/app/orders/(orders)/action";
+import {isRedirectError} from "@/utils/isRedirectError";
+import {AxiosError} from "axios";
 
 
 interface Props {
@@ -125,8 +127,17 @@ const OrderEditWindow: FC<Props> = ({groups, onClose, order}) => {
             setGroupText("");
             await ordersPageAction();
             handleOnClickAddGroup();
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+             
         } catch (e) {
+            if (isRedirectError(e)) throw e;
+
+            const status = (e as AxiosError).response?.status;
+            const message = (e as AxiosError<{ message?: string }>).response?.data?.message;
+
+            if (status === 400 && message === "Group already exists") {
+                return setError(message);
+            }
+
             return setError('Unable to save changes, data entered incorrectly.');
         }
     }

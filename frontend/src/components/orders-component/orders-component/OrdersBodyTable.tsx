@@ -73,10 +73,16 @@ const OrdersBodyTable: FC<Props> = ({orders, userId, groups}) => {
         }
 
         if (expandedOrderId) {
-            const newComment = await commentService.addComment(commentText, expandedOrderId);
-            setComments(prevComments => [...prevComments, newComment])
-            await ordersPageAction();
-            setCommentText('');
+            try {
+                const newComment = await commentService.addComment(commentText, expandedOrderId);
+                setComments(prevComments => [...prevComments, newComment])
+                await ordersPageAction();
+                setCommentText('');
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            }catch (e){
+                setError("Unable to add comment. Please try again.")
+            }
+
         }
     };
 

@@ -23,6 +23,11 @@ class AuthService {
         StatusCodesEnum.UNAUTHORIZED,
       );
     }
+
+    if (!user.isActive) {
+      throw new ApiError("Account is not active", StatusCodesEnum.FORBIDDEN);
+    }
+
     const isValidPassword = await passwordService.comparePassword(
       dto.password,
       user.password,
@@ -33,10 +38,6 @@ class AuthService {
         "Invalid email or password",
         StatusCodesEnum.UNAUTHORIZED,
       );
-    }
-
-    if (!user.isActive) {
-      throw new ApiError("Account is not active", StatusCodesEnum.FORBIDDEN);
     }
 
     if (user.blockUser === true) {

@@ -51,6 +51,13 @@ const loginUser = async (prevState: unknown, formData: FormData) => {
             return {error: "Your account has been blocked. Please contact the administrator."};
         }
 
+        if (status === 403 && message === "Account is not active") {
+            return {
+                error: "Your account hasn’t been activated yet. Open the activation link from your administrator to set a password.",
+                values: data,
+            };
+        }
+
         return {error: 'Invalid email or password'};
     }
 

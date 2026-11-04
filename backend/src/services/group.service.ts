@@ -8,8 +8,14 @@ class GroupService {
     return groupRepository.getAll();
   }
 
-  public create(group: IGroupCreate): Promise<IGroup> {
-    return groupRepository.create(group);
+  public async create(group: IGroupCreate): Promise<IGroup> {
+    const groupIsDB = await groupService.getBySelectValue(group);
+
+    if (groupIsDB) {
+      throw new ApiError("Group already exists", StatusCodesEnum.BAD_REQUEST);
+    }
+
+    return await groupRepository.create(group);
   }
 
   public async getBySelectValue(value: Partial<IGroup>): Promise<IGroup> {

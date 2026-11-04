@@ -12,16 +12,17 @@ import useDropdown from "@/hooks/useDropdown";
 import {searchValidatorSchema} from "@/validators/search.validator";
 import {useDebouncedCallback} from "use-debounce";
 import {exportToExcel} from "@/utils/exportToExcel";
-import {IOrder} from "@/interfaces/IOrder";
+import {Toast} from "@/components/toast-component/Toast";
+import {loadOrdersForExcel} from "@/server-actions/serverActionsExcel";
+
 
 interface Props {
     groups: IGroup[],
     query: IOrderQuery,
     userId: string;
-    orders: IOrder[];
 }
 
-const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
+const MenuSearch: FC<Props> = ({groups, query, userId}) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams);
@@ -35,6 +36,9 @@ const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
         dateFrom: searchParams.get('dateFrom') || '',
         dateTo: searchParams.get('dateTo') || '',
     });
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [toastKey, setToastKey] = useState(0);
+    const [isExporting, setIsExporting] = useState(false);
 
     const {
         isOpen: isCourseOpen,
@@ -80,7 +84,6 @@ const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
         dropdownRef: groupRef,
         setIsOpen: setIsOpenGroup,
     } = useDropdown();
-
 
     useEffect(() => {
         if (query.course) {
@@ -223,28 +226,26 @@ const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
         }
     }
 
-    useEffect(() => {
-        const handleExport = async () => {
-            if (orders.length > 0) {
-                await exportToExcel(orders);
-
-                params.delete('excel');
-
-                window.history.replaceState(
-                    {},
-                    '',
-                    `${window.location.pathname}?${params.toString()}`
-                );
+    const onClickForExcel = async () => {
+        setIsExporting(true);
+        try {
+            const data = await loadOrdersForExcel(query);
+            if (data.length > 0) {
+                await exportToExcel(data);
+            } else {
+                showToast("No orders to export for the selected filters");
             }
-        };
+        } catch {
+            showToast("Export failed. Please try again later.");
+        } finally {
+            setIsExporting(false);
+        }
+    };
 
-        handleExport().then();
-    }, [orders]);
-
-    const onClickForExcel = () => {
-        params.set('excel', 'excel');
-        router.push(`${urls.orders}?${params.toString()}`)
-    }
+    const showToast = (message: string) => {
+        setToastMessage(message);
+        setToastKey((k) => k + 1);
+    };
 
     return (
         <div className="menu-search">
@@ -501,7 +502,7 @@ const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
                            unoptimized={true}
                     />
                 </button>
-                <button className="excel" onClick={onClickForExcel}>
+                <button className="excel" onClick={onClickForExcel} disabled={isExporting}>
                     <Image src="/microsoft-excel.svg"
                            alt={`logo excel file`}
                            width={60}
@@ -509,6 +510,7 @@ const MenuSearch: FC<Props> = ({groups, query, userId, orders}) => {
                     />
                 </button>
             </div>
+            <Toast key={toastKey} message={toastMessage} type="error"/>
         </div>
     )
 }

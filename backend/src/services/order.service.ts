@@ -17,13 +17,27 @@ class OrderService {
   public async getAll(
     query: IOrderQuery,
   ): Promise<IPaginatedResponse<IOrderWithIndex>> {
-    const group = await groupRepository.getBySelectValue({
-      name: query.group,
-    });
+    let groupId: string | undefined;
+
+    if (query.group) {
+      const group = await groupRepository.getBySelectValue({
+        name: query.group,
+      });
+      if (!group) {
+        return {
+          totalItems: 0,
+          totalPages: 0,
+          prevPage: false,
+          nextPage: false,
+          data: [],
+        };
+      }
+      groupId = group._id;
+    }
 
     const { orders, totalItems } = await orderRepository.getAll({
       ...query,
-      group: group?._id || "",
+      group: groupId,
     });
 
     const totalPages = Math.ceil(totalItems / query.pageSize);
@@ -36,10 +50,27 @@ class OrderService {
     };
   }
 
-  public getAllForExcel(
+  public async getAllForExcel(
     query: Partial<IOrderQuery>,
   ): Promise<IOrderWithIndex[]> {
-    return orderRepository.getAllForExcel(query);
+    let groupId: string | undefined;
+
+    if (query.group) {
+      const group = await groupRepository.getBySelectValue({
+        name: query.group,
+      });
+
+      if (!group) {
+        return [];
+      }
+
+      groupId = group._id;
+    }
+
+    return await orderRepository.getAllForExcel({
+      ...query,
+      group: groupId,
+    });
   }
 
   public create(order: IOrderCreate): Promise<IOrder> {
@@ -71,24 +102,11 @@ class OrderService {
       throw new ApiError("Order not found", StatusCodesEnum.NOT_FOUND);
     }
 
-    if (orderNew.status !== orderInDB.status) {
-      if (orderNew.status === null) {
-        return await orderRepository.updateById(id, {
-          ...orderNew,
-          manager: null,
-        });
-      } else {
-        if (orderNew.status === StatusOrdersEnum.NEW) {
-          return await orderRepository.updateById(id, {
-            ...orderNew,
-            manager: null,
-          });
-        }
-      }
-    }
-
     if (orderInDB.status === StatusOrdersEnum.NEW || !orderInDB.status) {
-      if (orderNew.status === null) {
+      if (
+        orderNew.status === null ||
+        orderNew.status === StatusOrdersEnum.NEW
+      ) {
         return await orderRepository.updateById(id, {
           ...orderNew,
           status: StatusOrdersEnum.IN_WORK,
@@ -98,6 +116,19 @@ class OrderService {
         return await orderRepository.updateById(id, {
           ...orderNew,
           manager: userId,
+        });
+      }
+    }
+
+    if (orderNew.status !== orderInDB.status) {
+      if (
+        orderNew.status === null ||
+        orderNew.status === StatusOrdersEnum.NEW
+      ) {
+        return await orderRepository.updateById(id, {
+          ...orderNew,
+          status: StatusOrdersEnum.NEW,
+          manager: null,
         });
       }
     }
