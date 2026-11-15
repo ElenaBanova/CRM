@@ -26,6 +26,7 @@ class TokenService {
   public verifyToken(
     token: string,
     type: TokenTypeEnum | ActionTokenTypeEnum,
+    passwordHash: string = "",
   ): ITokenPayload {
     try {
       let secret: string;
@@ -38,10 +39,10 @@ class TokenService {
           secret = config.JWT_REFRESH_SECRET;
           break;
         case ActionTokenTypeEnum.ACTIVATE:
-          secret = config.JWT_ACTIVATE_SECRET;
+          secret = config.JWT_ACTIVATE_SECRET + passwordHash;
           break;
         case ActionTokenTypeEnum.RECOVERY:
-          secret = config.JWT_RECOVERY_SECRET;
+          secret = config.JWT_RECOVERY_SECRET + passwordHash;
           break;
         default:
           throw new ApiError("Invalid token type", StatusCodesEnum.BAD_REQUEST);
@@ -51,7 +52,7 @@ class TokenService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       throw new ApiError(
-        `Invalid token ${token}`,
+        "Invalid or expired token",
         StatusCodesEnum.UNAUTHORIZED,
       );
     }
@@ -60,6 +61,7 @@ class TokenService {
   public generateActionToken(
     payload: ITokenPayload,
     type: ActionTokenTypeEnum,
+    passwordHash: string = "",
   ): string {
     let secret: string;
     let expiresIn: any;
@@ -79,7 +81,20 @@ class TokenService {
           StatusCodesEnum.BAD_REQUEST,
         );
     }
-    return jwt.sign(payload, secret, { expiresIn });
+    return jwt.sign(payload, secret + passwordHash, { expiresIn });
+  }
+
+  public decodeActionToken(token: string): ITokenPayload {
+    const payload = jwt.decode(token) as ITokenPayload | null;
+
+    if (!payload || !payload.userId) {
+      throw new ApiError(
+        "Invalid or expired link",
+        StatusCodesEnum.UNAUTHORIZED,
+      );
+    }
+
+    return payload;
   }
 
   public async isTokenExists(

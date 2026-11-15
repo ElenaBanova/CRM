@@ -12,15 +12,13 @@ interface IUser extends IBase {
   blockUser: boolean;
 }
 
-interface IUserWithIndex extends IBase {
-  rowNumber: number;
-  _id: string;
-  name: string;
-  surname: string;
-  email: string;
-  role: RoleEnum;
-  isActive: boolean;
-  blockUser: boolean;
+interface IStatistic {
+  total: number;
+  inWork: number;
+  agree: number;
+  disagree: number;
+  dubbing: number;
+  new: number;
 }
 
 interface IUsersWithIndexAndLastLogin extends IBase {
@@ -34,6 +32,7 @@ interface IUsersWithIndexAndLastLogin extends IBase {
   role: RoleEnum;
   isActive: boolean;
   blockUser: boolean;
+  statistic: IStatistic;
 }
 
 interface IUserQuery {
@@ -42,16 +41,11 @@ interface IUserQuery {
 }
 
 export interface IResponseUsers {
-  users: IUserWithIndex[];
+  users: IUsersWithIndexAndLastLogin[];
   totalItems: number;
+  totalStatistic: IStatistic;
 }
 
 type IUserDTO = Pick<IUser, "name" | "surname" | "email">;
 
-export {
-  IUser,
-  IUserDTO,
-  IUserQuery,
-  IUsersWithIndexAndLastLogin,
-  IUserWithIndex,
-};
+export { IStatistic, IUser, IUserDTO, IUserQuery, IUsersWithIndexAndLastLogin };

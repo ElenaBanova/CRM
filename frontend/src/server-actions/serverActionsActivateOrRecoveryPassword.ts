@@ -40,6 +40,14 @@ const activateOrRecoveryPassword = async (prevState: unknown, formData: FormData
 
         const status = (e as AxiosError).response?.status;
 
+        if (status === 401) {
+            return {
+                error: "This link is no longer valid. Ask the administrator for a new one.",
+                values: data,
+                success: false,
+            };
+        }
+
         if (!status || status >= 500) {
             return {
                 error: "Server error. Please try again later or contact the administrator.",

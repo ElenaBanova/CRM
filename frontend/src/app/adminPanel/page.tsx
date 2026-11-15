@@ -1,6 +1,5 @@
 import {userService} from "@/api-services/user.api";
 import AdminPanelComponent from "@/components/admin-panel-component/admin-panel-component/AdminPanelComponent";
-import {orderService} from "@/api-services/order.api";
 import {SearchParams} from "next/dist/server/request/search-params";
 import {authService} from "@/api-services/auth.api";
 import PaginationOrders from "@/components/pagination/pagination/PaginationOrders";
@@ -18,8 +17,7 @@ const AdminPanel = async ({searchParams}: { searchParams: Promise<SearchParams> 
     const recovery = params.recovery || '';
     const page = params.page || '1';
 
-    const {data: users, totalPages} = await userService.loadManager(`${page}`);
-    const ordersStatistic = await orderService.getByOrdersStatistic();
+    const {data: users, totalPages, totalStatistic} = await userService.loadManager(`${page}`);
 
     let activateURL: string = '';
     if (activate) {
@@ -39,7 +37,7 @@ const AdminPanel = async ({searchParams}: { searchParams: Promise<SearchParams> 
 
     return (
         <div className="admin-panel">
-            <AdminPanelComponent me={_id} managers={users} statistic={ordersStatistic} activateURL={activateURL} recoveryURL={recoveryURL}/>
+            <AdminPanelComponent me={_id} managers={users} statistic={totalStatistic} activateURL={activateURL} recoveryURL={recoveryURL}/>
             <PaginationOrders totalPages={totalPages}/>
         </div>
     )

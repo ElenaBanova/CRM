@@ -1,6 +1,6 @@
 "use client"
 
-import React, {FC, useCallback, useEffect, useState} from "react";
+import React, {FC, useCallback, useEffect, useState, useTransition} from "react";
 import {courses, formats, statuses, types} from "@/constants/options-search";
 import {IGroup} from "@/interfaces/IGroup";
 import {useRouter, useSearchParams} from "next/navigation";
@@ -14,6 +14,7 @@ import {useDebouncedCallback} from "use-debounce";
 import {exportToExcel} from "@/utils/exportToExcel";
 import {Toast} from "@/components/toast-component/Toast";
 import {loadOrdersForExcel} from "@/server-actions/serverActionsExcel";
+import {ordersPageAction} from "@/app/orders/(orders)/action";
 
 
 interface Props {
@@ -39,6 +40,7 @@ const MenuSearch: FC<Props> = ({groups, query, userId}) => {
     const [toastMessage, setToastMessage] = useState<string | null>(null);
     const [toastKey, setToastKey] = useState(0);
     const [isExporting, setIsExporting] = useState(false);
+    const [isRefreshing, startTransition] = useTransition();
 
     const {
         isOpen: isCourseOpen,
@@ -173,6 +175,12 @@ const MenuSearch: FC<Props> = ({groups, query, userId}) => {
 
     }, [params, isChecked]);
 
+    const onClickRefresh = () => {
+        startTransition(async () => {
+            await ordersPageAction();
+        });
+    };
+
     const noSearchParams = () => {
         if (searchParams.get('page') !== '1') {
             handleCheckbox('page', '1');
@@ -218,10 +226,10 @@ const MenuSearch: FC<Props> = ({groups, query, userId}) => {
         if (searchParams.get('age')) {
             handleInputChange('age', 'delete');
         }
-        if (searchParams.get("dateFrom")){
+        if (searchParams.get("dateFrom")) {
             handleInputChange('dateFrom', 'delete');
         }
-        if (searchParams.get("dateTo")){
+        if (searchParams.get("dateTo")) {
             handleInputChange('dateTo', 'delete');
         }
     }
@@ -488,33 +496,44 @@ const MenuSearch: FC<Props> = ({groups, query, userId}) => {
                        type="date"
                        value={inputValues.dateFrom}
                        max={inputValues.dateTo || undefined}
-                       onChange={(e)=>{handleInputChange('dateFrom', e.target.value)}}
+                       onChange={(e) => {
+                           handleInputChange('dateFrom', e.target.value)
+                       }}
                 />
-            <input className="search-input"
-                   type="date"
-                   value={inputValues.dateTo}
-                   min={inputValues.dateFrom || undefined}
-                   onChange={(e) => {handleInputChange('dateTo', e.target.value)}}/>
+                <input className="search-input"
+                       type="date"
+                       value={inputValues.dateTo}
+                       min={inputValues.dateFrom || undefined}
+                       onChange={(e) => {
+                           handleInputChange('dateTo', e.target.value)
+                       }}/>
             </div>
             <div className="search-right-block">
                 <label><input className="checkbox-my" type="checkbox"
                               checked={isChecked}
                               onChange={() => handleCheckbox('manager', userId)}/>My
                 </label>
-                <button className="no-search" onClick={noSearchParams}>
+                <button className="refresh" onClick={onClickRefresh} disabled={isRefreshing} title="Refresh list">
                     <Image src="/image-circular.png"
                            alt={`logo circular-arrow`}
-                           width={60}
+                           width={40}
                            height={60}
                            style={{background: 'transparent'}}
                            priority
                            unoptimized={true}
                     />
                 </button>
-                <button className="excel" onClick={onClickForExcel} disabled={isExporting}>
+                <button className="no-filter" onClick={noSearchParams} title="Reset filters">
+                    <Image src="/images-no-filter.png"
+                           alt={`logo "no filter"`}
+                           width={40}
+                           height={60}
+                    />
+                </button>
+                <button className="excel" onClick={onClickForExcel} disabled={isExporting} title="Export to excel">
                     <Image src="/microsoft-excel.svg"
                            alt={`logo excel file`}
-                           width={60}
+                           width={40}
                            height={60}
                     />
                 </button>

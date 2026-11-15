@@ -11,6 +11,8 @@ import {formatDate} from "@/utils/date";
 import {ordersPageAction} from "@/app/orders/(orders)/action";
 import OrderEditWindow from "@/components/orders-component/orders-component/OrderEditWindow";
 import {IGroup} from "@/interfaces/IGroup";
+import {isRedirectError} from "@/utils/isRedirectError";
+import {AxiosError} from "axios";
 
 interface Props {
     orders: IOrder[]
@@ -27,6 +29,7 @@ const OrdersBodyTable: FC<Props> = ({orders, userId, groups}) => {
     const [error, setError] = useState<string | null>(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [isSending, setIsSending] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -54,35 +57,53 @@ const OrdersBodyTable: FC<Props> = ({orders, userId, groups}) => {
 
 
     const toggleOrderExpansion = async (orderId: string) => {
+        setCommentText('');
+        setError(null);
+
         if (expandedOrderId === orderId) {
             setExpandedOrderId(null)
         } else {
             setExpandedOrderId(orderId);
-            const data = await commentService.getAll(orderId)
+            const data = await commentService.getAll(orderId);
             setComments(data || [])
         }
-        setCommentText('');
-        setError(null);
     }
 
     const handleClick = async () => {
-        const {error} = commentValidatorSchema.validate({comment: commentText})
+        if (isSending || !expandedOrderId) return;
+
+        const {error} = commentValidatorSchema.validate({comment: commentText});
 
         if (error) {
-            return setError("The comment is incorrect.")
+            return setError("The comment is incorrect.");
         }
 
-        if (expandedOrderId) {
-            try {
-                const newComment = await commentService.addComment(commentText, expandedOrderId);
-                setComments(prevComments => [...prevComments, newComment])
-                await ordersPageAction();
-                setCommentText('');
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            }catch (e){
-                setError("Unable to add comment. Please try again.")
-            }
+        setError(null);
+        setIsSending(true);
 
+        try {
+            const newComment = await commentService.addComment(commentText, expandedOrderId);
+            setComments(prev => [...prev, newComment]);
+            setCommentText('');
+        } catch (e) {
+            if (isRedirectError(e)) throw e;
+
+            const status = (e as AxiosError).response?.status;
+            setError(
+                status === 403
+                    ? "You don't have permission to comment on this order."
+                    : "Unable to add comment. Please try again."
+            );
+            setIsSending(false);
+            return;
+        }
+
+        setIsSending(false);
+
+        try {
+            await ordersPageAction();
+        } catch (e) {
+            if (isRedirectError(e)) throw e;
         }
     };
 
@@ -143,7 +164,10 @@ const OrdersBodyTable: FC<Props> = ({orders, userId, groups}) => {
                                                    }}/>
                                             <button className="comment-add-button"
                                                     onClick={handleClick}
-                                                    disabled={order.manager !== null && order.manager !== undefined && order.manager !== userId}>CONFIRM
+                                                    disabled={
+                                                        isSending ||
+                                                        (order.manager !== null && order.manager !== undefined && order.manager !== userId)
+                                                    }>CONFIRM
                                             </button>
                                             {error && (
                                                 <p className="text-red-500 mb-4">

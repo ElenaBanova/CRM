@@ -31,4 +31,8 @@ const orderSchema = new Schema(
   { timestamps: true, versionKey: false },
 );
 
+orderSchema.index({ manager: 1 });
+orderSchema.index({ group: 1 });
+orderSchema.index({ status: 1 });
+
 export const Order = model<IOrder>("orders", orderSchema);

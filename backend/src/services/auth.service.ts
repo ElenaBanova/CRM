@@ -76,6 +76,7 @@ class AuthService {
         role: user.role,
       },
       type,
+      user.password ?? "",
     );
 
     return `${config.FRONTEND_URL}/${type}/${actionToken}`;
@@ -86,9 +87,11 @@ class AuthService {
     type: ActionTokenTypeEnum,
     password: string,
   ): Promise<void> {
-    const { userId } = tokenService.verifyToken(token, type);
+    const { userId } = tokenService.decodeActionToken(token);
 
     const user = await userService.getById(userId);
+
+    tokenService.verifyToken(token, type, user.password ?? "");
 
     if (user.blockUser === true) {
       throw new ApiError("Target user is blocked", StatusCodesEnum.FORBIDDEN);

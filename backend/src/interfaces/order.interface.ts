@@ -92,8 +92,8 @@ interface IOrderWithIndex {
   utm: string;
   msg: string;
   status: StatusOrdersEnum;
-  group: string;
-  manager: string;
+  group?: string;
+  manager?: string;
   created_at: Date;
   updatedAt: Date;
 }

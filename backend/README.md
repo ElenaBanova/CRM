@@ -35,6 +35,7 @@ The project is set up as an ESM module (`"type": "module"` in `package.json`), s
 ```
 backend/src/
 ├── main.ts            Entry point: Express setup, MongoDB connection, server startup
+├── seed.ts            One-off script: creates the administrator (admin@gmail.com / admin)
 ├── configs/            Configuration (environment variables, the Swagger document)
 ├── routers/            Map a URL + HTTP method to a controller (plus the middleware chain)
 ├── controllers/        Parse the request (req) and shape the response (res); no business logic
@@ -57,15 +58,15 @@ Example: a `PATCH /orders/:id` request first goes through the `router` (`order.r
 1. Leads (orders) are imported into the system; managers then work them through the API.
 2. An admin creates manager accounts (`POST /users`) and generates an activation / password-recovery link, which they pass to the manager through any channel (email, Telegram, etc.).
 3. A manager logs in (`POST /auth/sign-in`) and receives a token pair: `accessToken` (short-lived, sent with every request) and `refreshToken` (long-lived, only used to get a new `accessToken` once the old one expires).
-4. A manager sees the list of orders (`GET /orders`) and can pick one up — as soon as they update the order or leave a comment on it once, that order becomes "claimed" by them, and no other manager can edit it afterwards.
+4. A manager sees the list of orders (`GET /orders`) and can pick one up — as soon as they update the order or leave a comment on it once, that order becomes "claimed" by them, and no other manager can edit it afterward.
 5. An order moves through statuses: `New → In work → Agree / Disagree / Dubbing`.
 6. Every interaction with an order can be logged as a comment.
 
 ## Installation and Running
 
-### Option 1 — via Docker (recommended if you don't want to install MongoDB locally)
+### Option 1 — via Docker (recommended)
 
-See the root [`README.md`](../README.md) — the whole stack (backend + frontend + MongoDB + nginx) comes up with a single `docker compose up --build` command.
+See the root [`README.md`](../README.md) — backend, frontend and nginx come up with a single `docker compose up --build` command. MongoDB is not part of the compose stack: set `MONGO_URI` in `.env` to your database (e.g. a free MongoDB Atlas cluster).
 
 ### Option 2 — running the backend standalone, without Docker
 
@@ -87,8 +88,13 @@ npm install
 cd ..
 cp .env.example .env
 
-# 4. Go back into backend and start the server in dev mode
+# 4. Go back into backend and create the administrator (first run only):
+#    creates admin@gmail.com / admin
 cd backend
+npm run seed
+# optional: npm run seed:demo (administrator + 3 groups + 60 test orders).
+
+# 5. Start the server in dev mode
 npm start
 ```
 

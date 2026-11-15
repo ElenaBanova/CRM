@@ -15,10 +15,12 @@ class CommentService {
   }
 
   public async create(commentNew: ICommentCreate): Promise<IComment> {
-    const comment = await commentRepository.create(commentNew);
-    const { status } = await orderService.getById(comment._idOrder);
+    const order = await orderService.getById(commentNew._idOrder);
+    orderService.assertCanModify(order, commentNew._userId);
 
-    if (!status || status === StatusOrdersEnum.NEW) {
+    const comment = await commentRepository.create(commentNew);
+
+    if (!order.status || order.status === StatusOrdersEnum.NEW) {
       await orderService.updateById(
         comment._idOrder,
         {

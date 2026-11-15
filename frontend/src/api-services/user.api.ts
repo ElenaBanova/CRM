@@ -1,8 +1,6 @@
 import {axiosClient, axiosServer} from "@/api-services/api.services";
-import {IPaginatedResponseUser, IUser, IUsersResponseApi, IUsersWithStatistic} from "@/interfaces/IUser";
+import {IPaginatedResponseUser, IUser, IUsersWithStatistic} from "@/interfaces/IUser";
 import {urls} from "@/constants/urls";
-import {orderService} from "@/api-services/order.api";
-import {IOrder, IPaginatedResponseOrder} from "@/interfaces/IOrder";
 
 
 const userService = {
@@ -17,21 +15,7 @@ const userService = {
 
         const {data} = await axiosServer.get<IPaginatedResponseUser<IUsersWithStatistic>>(url);
 
-        const enrichedData= await Promise.all(
-            data.data
-                // .filter(user => user.role === 'manager')
-                .map(async (user) => {
-                    const statistic = await orderService.getByOrdersStatistic(user._id);
-                    return { ...user, statistic };
-                })
-        );
-
-        return {...data, data: enrichedData};
-    },
-
-    async getByIdServer(userId: string): Promise<IUser> {
-        const {data: user} = await axiosServer.get<IUser>(urls.users + '/' + userId);
-        return user
+        return data;
     },
 
     async getByIdClient(userId: string): Promise<IUser> {

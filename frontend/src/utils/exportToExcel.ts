@@ -20,7 +20,7 @@ export const exportToExcel = async (data: IOrder[]) => {
         {header: 'Summa', key: 'sum'},
         {header: 'Already_Paid', key: 'already_paid'},
         {header: 'Created_At', key: 'created_at'},
-        {header: 'Group', key: 'group'},
+        {header: 'Group', key: 'groupName'},
         {header: 'Manager', key: 'managerInfo'},
 
     ] as ExcelJS.Column[];

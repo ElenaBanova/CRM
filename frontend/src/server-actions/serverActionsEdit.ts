@@ -70,6 +70,10 @@ const orderEdit = async (prevState: unknown, formData: FormData) => {
             };
         }
 
+        if (status === 403) {
+            return { error: "You don't have permission to edit this order. It is assigned to another manager.", values: cleanedData, success: false };
+        }
+
         return {error: 'Unable to save changes, data entered incorrectly.', values: cleanedData, success: false};
     }
 }

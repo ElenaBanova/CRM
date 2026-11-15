@@ -11,4 +11,6 @@ const tokenSchema = new Schema(
   { timestamps: true, versionKey: false },
 );
 
+tokenSchema.index({ _userId: 1, createdAt: -1 });
+
 export const Token = model<IToken>("tokens", tokenSchema);

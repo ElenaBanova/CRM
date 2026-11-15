@@ -61,6 +61,7 @@ npm run dev      # development, http://localhost:3000
 ```
 
 Production-like run: `npm run build && npm start`.
+Browser requests go to `/api/*`. In Docker, nginx proxies them to the backend; when running standalone, `next.config.ts` rewrites them to `BASE_URL`, so `BASE_URL` must point to the running backend (e.g. `http://localhost:5000`).
 
 ## Environment Variables
 

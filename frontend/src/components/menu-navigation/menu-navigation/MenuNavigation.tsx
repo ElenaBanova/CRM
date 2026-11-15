@@ -18,17 +18,18 @@ const MenuNavigation = ({name, role}: Props) => {
             <div><Image src="/pngegg.png" alt={`logo`} width={120} height={120}/></div>
             <div className='button-navigation'>
                 <h2 className="name">{name}</h2>
-                {role === 'admin' && pathname === '/orders' && <div className='button' style={{cursor: "pointer"}}>
-                    <Link href={'/adminPanel?page=1'}><Image
+                {role === 'admin' && pathname === '/orders' &&
+                    <div className='button' style={{cursor: "pointer"}} title="Go to admin panel">
+                        <Link href={'/adminPanel?page=1'}><Image
+                            src="/admin-with-cogwheels.svg" alt={`logo admin panel`} width={60} height={60}/>
+                        </Link></div>}
+                {role === 'admin' && pathname === '/adminPanel' && <div className='button' style={{cursor: "pointer"}}>
+                    <Link href={'/orders?page=1&order=-_id'}><Image
                         src="/admin-with-cogwheels.svg" alt={`logo admin panel`} width={60} height={60}/>
                     </Link></div>}
-                {role === 'admin' && pathname === '/adminPanel' && <div className='button' style={{cursor: "pointer"}}>
-                <Link href={'/orders?page=1&order=-_id'}><Image
-                    src="/admin-with-cogwheels.svg" alt={`logo admin panel`} width={60} height={60}/>
-                </Link></div>}
                 <div className='button' onClick={() => {
                     redirect("/login")
-                }} style={{cursor: "pointer"}}>
+                }} style={{cursor: "pointer"}} title="Exit">
                     <Image src="/135533211.png"
                            alt={`logo exit`}
                            width={60}

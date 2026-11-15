@@ -25,6 +25,7 @@ interface IOrder {
     group: string;
     manager: string;
     managerInfo?: string;
+    groupName?: string
     created_at: string;
     updatedAt: string;
 }

@@ -79,6 +79,28 @@ docker compose up --build
 
 The app is then available at **http://localhost:8080** (nginx routes `/` to the frontend and `/api/` to the backend).
 
+### First start (empty database)
+
+The database starts empty, and the app has no sign-up, so follow these steps:
+
+1. **Database.** Create a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster (or use a local MongoDB) and copy its connection string.
+2. **Environment.** `cp .env.example .env` and fill in the values (see *Environment Variables* below), including `MONGO_URI`.
+3. **Run.** `docker compose up --build`
+4. **Create the administrator:**
+   ```bash
+   docker compose exec backend npm run seed
+   ```
+   This creates **admin@gmail.com / admin** (demo credentials, local use only). The command is safe to repeat.
+5. **Sign in** at http://localhost:8080.
+
+**Optional: demo data.** To also add 3 groups and 60 test orders, run this instead of step 4:
+
+```bash
+docker compose exec backend npm run seed:demo
+```
+
+Demo orders are only added when there are no orders yet. You can also create orders yourself via `POST /orders` in Swagger (http://localhost:8080/api/docs/).
+
 ### Running the apps individually (without Docker)
 
 See [`backend/README.md`](backend/README.md) for running the backend standalone. The frontend is started with `npm install` and `npm run dev` inside the `frontend/` folder (the backend must be running).

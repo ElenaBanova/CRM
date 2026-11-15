@@ -2,9 +2,6 @@ import {axiosServer} from "@/api-services/api.services";
 import {urls} from "@/constants/urls";
 import {IOrder, IOrderPromise, IPaginatedResponseOrder} from "@/interfaces/IOrder";
 import {IOrderQuery} from "@/interfaces/IOrderQuery";
-import {userService} from "@/api-services/user.api";
-import {IStatistic} from "@/interfaces/IStatistic";
-import {groupService} from "@/api-services/group.api";
 
 
 const orderService = {
@@ -35,18 +32,7 @@ const orderService = {
         const url = `${urls.orders}?${params.toString()}`;
         const {data} = await axiosServer.get<IPaginatedResponseOrder<IOrder>>(url);
 
-        const enrichedData = await Promise.all(data.data.map(async (order) => {
-            if (!order.manager) return order;
-
-            try {
-                const user = await userService.getByIdServer(order.manager);
-                return {...order, managerInfo: `${user.name} ${user.surname}`};
-            } catch {
-                return {...order, managerInfo: ''};
-            }
-        }));
-
-        return {...data, data: enrichedData};
+        return data;
     },
 
     async getAllForExcel(queryExcel?: IOrderQuery): Promise<IOrder[]> {
@@ -72,60 +58,13 @@ const orderService = {
         const urlExcel = `${urls.orders}/excel?${params.toString()}`;
         const data = await axiosServer.get<IOrder[]>(urlExcel);
 
-        return await Promise.all(data.data.map(async (order) => {
-            if (!order.manager && !order.group) return order;
-
-            const [group, user] = await Promise.all([
-                order.group ? groupService.getByIdGroup(order.group) : null,
-                order.manager ? userService.getByIdServer(order.manager) : null,
-            ]);
-
-            return {...order, group: group?.name || '', managerInfo: user ? `${user.name ?? ''} ${user.surname ?? ''}`.trim() : ''};
-        }));
+        return data.data;
     },
 
     async getById(id: string): Promise<IOrderPromise> {
         const {data} = await axiosServer.get<IOrderPromise>(urls.orders + '/' + id);
         return data;
     },
-
-    async getByOrdersStatistic(managerId?: string): Promise<IStatistic> {
-        let data: IOrder[] = [];
-
-        if (managerId) {
-            const params = new URLSearchParams();
-            params.append("order", '-_id');
-            params.append("manager", managerId);
-
-            const urlExcel = `${urls.orders}/excel?${params.toString()}`;
-            const {data: orders} = await axiosServer.get<IOrder[]>(urlExcel);
-            data = orders;
-        } else {
-            const {data: orders} = await axiosServer.get<IOrder[]>(urls.orders + "/excel");
-            data = orders;
-        }
-
-        const total = data?.length || 0;
-        const inWork = data?.filter((order) => order.status === 'In work').length || 0;
-        const agree = data?.filter((order) => order.status === 'Agree').length || 0;
-        const disagree = data?.filter((order) => order.status === 'Disagree').length || 0;
-        const dubbing = data?.filter((order) => order.status === 'Dubbing').length || 0;
-        const newStatus = data?.filter((order) => order.status === 'New').length || 0;
-        const nullStatus = data?.filter((order) => order.status === null).length || 0;
-
-        return {
-            total: total,
-            inWork: inWork,
-            agree: agree,
-            disagree: disagree,
-            dubbing: dubbing,
-            new: newStatus + nullStatus,
-        };
-    }
-    // async updateById(id: string, order: IOrderUpdate): Promise<IOrderPromise> {
-    //     const {data} = await axiosServer.post<IOrderPromise>(urls.orders + "/" + id, order)
-    //     return data
-    // }
 }
 
 export {orderService};

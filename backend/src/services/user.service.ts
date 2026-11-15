@@ -2,7 +2,7 @@ import { BanActionEnum } from "../enums/ban-action.enum";
 import { RoleEnum } from "../enums/role.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiError } from "../errors/api.errors";
-import { IPaginatedResponse } from "../interfaces/paginated-response.interface";
+import { IPaginatedUsersResponse } from "../interfaces/paginated-response.interface";
 import {
   IUser,
   IUserDTO,
@@ -16,8 +16,8 @@ class UserService {
   public async getAll(
     query: IUserQuery,
     currentUserId: string,
-  ): Promise<IPaginatedResponse<IUsersWithIndexAndLastLogin>> {
-    const { users, totalItems } = await userRepository.getAll(
+  ): Promise<IPaginatedUsersResponse<IUsersWithIndexAndLastLogin>> {
+    const { users, totalItems, totalStatistic } = await userRepository.getAll(
       query,
       currentUserId,
     );
@@ -30,6 +30,7 @@ class UserService {
         prevPage: !!(query.page - 1),
         nextPage: query.page + 1 <= totalPages,
         data: [],
+        totalStatistic,
       };
     }
 
@@ -52,6 +53,7 @@ class UserService {
       prevPage: !!(query.page - 1),
       nextPage: query.page + 1 <= totalPages,
       data,
+      totalStatistic,
     };
   }
 

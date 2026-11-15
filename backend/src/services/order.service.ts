@@ -102,7 +102,12 @@ class OrderService {
       throw new ApiError("Order not found", StatusCodesEnum.NOT_FOUND);
     }
 
+    this.assertCanModify(orderInDB, userId);
+
     if (orderInDB.status === StatusOrdersEnum.NEW || !orderInDB.status) {
+      if (!this.hasChanges(orderInDB, orderNew)) {
+        return orderInDB;
+      }
       if (
         orderNew.status === null ||
         orderNew.status === StatusOrdersEnum.NEW
@@ -136,6 +141,32 @@ class OrderService {
     return await orderRepository.updateById(id, {
       ...orderNew,
     });
+  }
+
+  private normalize(key: string, value: unknown): string {
+    if (key === "status") {
+      return value === null || value === undefined || value === ""
+        ? StatusOrdersEnum.NEW
+        : String(value);
+    }
+    return value === null || value === undefined ? "" : String(value);
+  }
+
+  private hasChanges(orderInDB: IOrder, orderNew: IOrderUpdate): boolean {
+    return Object.entries(orderNew).some(
+      ([key, value]) =>
+        this.normalize(key, (orderInDB as any)[key]) !==
+        this.normalize(key, value),
+    );
+  }
+
+  public assertCanModify(order: IOrder, userId: string): void {
+    if (order.manager && String(order.manager) !== String(userId)) {
+      throw new ApiError(
+        "Order is assigned to another manager",
+        StatusCodesEnum.FORBIDDEN,
+      );
+    }
   }
 }
 

@@ -9,7 +9,7 @@ class GroupService {
   }
 
   public async create(group: IGroupCreate): Promise<IGroup> {
-    const groupIsDB = await groupService.getBySelectValue(group);
+    const groupIsDB = await groupRepository.getBySelectValue(group);
 
     if (groupIsDB) {
       throw new ApiError("Group already exists", StatusCodesEnum.BAD_REQUEST);

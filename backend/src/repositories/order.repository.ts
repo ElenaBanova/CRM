@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 
 import {
   IOrder,
@@ -11,6 +11,47 @@ import {
 import { Order } from "../models/order.model";
 
 class OrderRepository {
+  private sortStage(order: string = "-_id"): Record<string, 1 | -1> {
+    const desc = order.startsWith("-");
+    return { [desc ? order.slice(1) : order]: desc ? -1 : 1 };
+  }
+
+  private lookups = [
+    {
+      $lookup: {
+        from: "users",
+        localField: "manager",
+        foreignField: "_id",
+        as: "m",
+      },
+    },
+    {
+      $lookup: {
+        from: "groups",
+        localField: "group",
+        foreignField: "_id",
+        as: "g",
+      },
+    },
+    {
+      $addFields: {
+        managerInfo: {
+          $trim: {
+            input: {
+              $concat: [
+                { $ifNull: [{ $arrayElemAt: ["$m.name", 0] }, ""] },
+                " ",
+                { $ifNull: [{ $arrayElemAt: ["$m.surname", 0] }, ""] },
+              ],
+            },
+          },
+        },
+        groupName: { $ifNull: [{ $arrayElemAt: ["$g.name", 0] }, ""] },
+      },
+    },
+    { $project: { m: 0, g: 0 } },
+  ];
+
   public async getAll(query: IOrderQuery): Promise<IResponseOrders> {
     const skip = query.pageSize * (query.page - 1);
     const filterObject: FilterQuery<IOrder> = {};
@@ -60,13 +101,13 @@ class OrderRepository {
       }
     }
     if (query.group) {
-      filterObject.group = query.group;
+      filterObject.group = new Types.ObjectId(query.group);
     }
     if (query.created_at) {
       filterObject.created_at = { $regex: query.created_at, $options: "i" };
     }
     if (query.manager) {
-      filterObject.manager = query.manager;
+      filterObject.manager = new Types.ObjectId(query.manager);
     }
     if (query.dateFrom || query.dateTo) {
       filterObject.created_at = {};
@@ -78,37 +119,31 @@ class OrderRepository {
       }
     }
 
-    const baseOrderedIds = await Order.find({})
-      .sort({ _id: 1 })
-      .select("_id")
-      .lean();
-
-    const idToRowNumberMap = new Map<string, number>();
-    baseOrderedIds.forEach((order, index) => {
-      idToRowNumberMap.set(order._id.toString(), index + 1);
-    });
-
-    const results = await Promise.all([
-      Order.find(filterObject)
-        .sort(query.order)
-        .skip(skip)
-        .limit(query.pageSize)
-        .lean(),
-      Order.countDocuments(filterObject).exec(),
+    const [result] = await Order.aggregate([
+      {
+        $setWindowFields: {
+          sortBy: { _id: 1 },
+          output: { rowNumber: { $documentNumber: {} } },
+        },
+      },
+      { $match: filterObject },
+      { $sort: this.sortStage(query.order) },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: Number(query.pageSize) },
+            ...this.lookups,
+          ],
+          total: [{ $count: "count" }],
+        },
+      },
     ]);
 
-    const orders: IOrderWithIndex[] = results[0].map((order) => ({
-      ...order,
-      rowNumber: idToRowNumberMap.get(order._id.toString()),
-    }));
-
-    return {
-      orders,
-      totalItems: results[1],
-    };
+    return { orders: result.data, totalItems: result.total[0]?.count ?? 0 };
   }
 
-  public async getAllForExcel(
+  public getAllForExcel(
     query: Partial<IOrderQuery>,
   ): Promise<IOrderWithIndex[]> {
     const filterObjectExcel: FilterQuery<IOrder> = {};
@@ -173,7 +208,7 @@ class OrderRepository {
       }
     }
     if (query.group) {
-      filterObjectExcel.group = query.group;
+      filterObjectExcel.group = new Types.ObjectId(query.group);
     }
     if (query.created_at) {
       filterObjectExcel.created_at = {
@@ -182,7 +217,7 @@ class OrderRepository {
       };
     }
     if (query.manager) {
-      filterObjectExcel.manager = query.manager;
+      filterObjectExcel.manager = new Types.ObjectId(query.manager);
     }
     if (query.dateFrom || query.dateTo) {
       filterObjectExcel.created_at = {};
@@ -194,24 +229,17 @@ class OrderRepository {
       }
     }
 
-    const baseOrderedIds = await Order.find({})
-      .sort({ _id: 1 })
-      .select("_id")
-      .lean();
-
-    const idToRowNumberMap = new Map<string, number>();
-    baseOrderedIds.forEach((order, index) => {
-      idToRowNumberMap.set(order._id.toString(), index + 1);
-    });
-
-    const results = await Order.find(filterObjectExcel)
-      .sort(query.order)
-      .lean();
-
-    return results.map((order: IOrder) => ({
-      ...order,
-      rowNumber: idToRowNumberMap.get(order._id.toString()),
-    }));
+    return Order.aggregate<IOrderWithIndex>([
+      {
+        $setWindowFields: {
+          sortBy: { _id: 1 },
+          output: { rowNumber: { $documentNumber: {} } },
+        },
+      },
+      { $match: filterObjectExcel },
+      { $sort: this.sortStage(query.order) },
+      ...this.lookups,
+    ]).exec();
   }
 
   public create(order: IOrderCreate): Promise<IOrder> {
