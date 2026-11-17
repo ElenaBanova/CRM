@@ -247,7 +247,7 @@ const orderQueryParameters: OpenAPIV3.ParameterObject[] = [
     name: "group",
     in: "query",
     schema: { type: "string" },
-    description: "Filter by group ObjectId.",
+    description: "Filter by group name. An unknown name returns an empty list.",
   },
   {
     name: "manager",
@@ -449,7 +449,8 @@ export const openApiDocument: OpenAPIV3.Document = {
       OrderCreateRequest: {
         type: "object",
         description:
-          "All fields are optional; used by the public lead-capture form.",
+          "Used by the public lead-capture form. `name` and `phone` are required, all other fields are optional.",
+        required: ["name", "phone"],
         properties: {
           name: { type: "string" },
           surname: { type: "string" },
@@ -459,8 +460,8 @@ export const openApiDocument: OpenAPIV3.Document = {
           course: { $ref: "#/components/schemas/CoursesEnum" },
           course_format: { $ref: "#/components/schemas/FormatCoursesEnum" },
           course_type: { $ref: "#/components/schemas/TypeCoursesEnum" },
-          sum: { type: "number", minimum: 1, maximum: 500000 },
-          already_paid: { type: "number", minimum: 1, maximum: 500000 },
+          sum: { type: "number", maximum: 500000 },
+          already_paid: { type: "number", maximum: 500000 },
           utm: { type: "string" },
           msg: { type: "string", maxLength: 30 },
           status: { $ref: "#/components/schemas/StatusOrdersEnum" },

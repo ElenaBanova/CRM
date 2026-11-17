@@ -120,6 +120,7 @@ class OrderService {
       } else {
         return await orderRepository.updateById(id, {
           ...orderNew,
+          status: orderNew.status ?? StatusOrdersEnum.IN_WORK,
           manager: userId,
         });
       }

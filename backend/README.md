@@ -219,7 +219,7 @@ Base URL without Docker: `http://localhost:<PORT>` (routes are mounted with no `
 | --- | --- | --- | --- |
 | GET | `/orders` | authenticated | paginated, filterable, sortable list |
 | GET | `/orders/excel` | authenticated | same filters, no pagination (used for `.xlsx` export) |
-| POST | `/orders` | **public** (no token) | creates a lead (used by the external lead-capture form) |
+| POST | `/orders` | **public** (no token) | creates a lead (used by the external lead-capture form); `name` and `phone` are required, other fields are optional | |
 | GET | `/orders/:id` | authenticated | a single order |
 | PATCH | `/orders/:id` | the assigned manager (or any manager, if the order is unassigned) | updates order fields. An unassigned order is claimed (`In work`, assigned to you) only when at least one field actually changes; setting the status back to `New` releases it |
 | GET | `/orders/:id/comments` | authenticated | list of comments on the order |
