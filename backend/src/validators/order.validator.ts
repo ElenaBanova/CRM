@@ -29,10 +29,10 @@ export class OrderValidator {
   private static msg = joi.string().max(30);
 
   public static create = joi.object({
-    name: this.name,
+    name: this.name.required(),
     surname: this.surname,
     email: this.email,
-    phone: this.phone,
+    phone: this.phone.required(),
     age: this.age,
     course: this.course,
     course_format: this.course_format,
