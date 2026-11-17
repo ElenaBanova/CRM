@@ -9,7 +9,6 @@ import {
   IUserQuery,
   IUsersWithIndexAndLastLogin,
 } from "../interfaces/user.interface";
-import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
@@ -23,36 +22,13 @@ class UserService {
     );
 
     const totalPages = Math.ceil(totalItems / query.pageSize);
-    if (!users) {
-      return {
-        totalItems,
-        totalPages,
-        prevPage: !!(query.page - 1),
-        nextPage: query.page + 1 <= totalPages,
-        data: [],
-        totalStatistic,
-      };
-    }
-
-    const data = await Promise.all(
-      users.map(async (user) => {
-        const latestToken = await tokenRepository.findByParams({
-          _userId: user._id,
-        });
-
-        return {
-          ...user,
-          lastLogin: latestToken?.createdAt || null,
-        } as IUsersWithIndexAndLastLogin;
-      }),
-    );
 
     return {
       totalItems,
       totalPages,
       prevPage: !!(query.page - 1),
       nextPage: query.page + 1 <= totalPages,
-      data,
+      data: users,
       totalStatistic,
     };
   }

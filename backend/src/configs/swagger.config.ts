@@ -34,6 +34,19 @@ const userSchema: OpenAPIV3.SchemaObject = {
   },
 };
 
+const statisticSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  description: "Order counts by status.",
+  properties: {
+    total: { type: "integer" },
+    new: { type: "integer" },
+    inWork: { type: "integer" },
+    agree: { type: "integer" },
+    disagree: { type: "integer" },
+    dubbing: { type: "integer" },
+  },
+};
+
 const userWithLastLoginSchema: OpenAPIV3.SchemaObject = {
   allOf: [
     { $ref: "#/components/schemas/User" },
@@ -46,6 +59,10 @@ const userWithLastLoginSchema: OpenAPIV3.SchemaObject = {
           format: "date-time",
           nullable: true,
           description: "Timestamp of the latest issued token, or null.",
+        },
+        statistic: {
+          $ref: "#/components/schemas/Statistic",
+          description: "Order counts for this manager.",
         },
       },
     },
@@ -62,6 +79,9 @@ const paginatedUsersSchema: OpenAPIV3.SchemaObject = {
     data: {
       type: "array",
       items: { $ref: "#/components/schemas/UserWithLastLogin" },
+    },
+    totalStatistic: {
+      $ref: "#/components/schemas/Statistic",
     },
   },
 };
@@ -117,6 +137,14 @@ const orderWithIndexSchema: OpenAPIV3.SchemaObject = {
         rowNumber: {
           type: "integer",
           description: "Row position within the full, unfiltered collection.",
+        },
+        managerInfo: {
+          type: "string",
+          description: "Manager's full name, empty if unassigned.",
+        },
+        groupName: {
+          type: "string",
+          description: "Group name, empty if none.",
         },
       },
     },
@@ -271,7 +299,7 @@ const errorResponses = {
   },
   Forbidden: {
     description:
-      "Insufficient role/permission, blocked account, or not the assigned manager.",
+      'Insufficient role/permission, blocked account, or "Order is assigned to another manager".',
     content: {
       "application/json": { schema: { $ref: "#/components/schemas/Error" } },
     },
@@ -284,13 +312,20 @@ const errorResponses = {
   },
 } satisfies Record<string, OpenAPIV3.ResponseObject>;
 
+const errorWith = (description: string): OpenAPIV3.ResponseObject => ({
+  description,
+  content: {
+    "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+  },
+});
+
 export const openApiDocument: OpenAPIV3.Document = {
   openapi: "3.0.3",
   info: {
     title: "CRM API",
     version: "1.0.0",
     description:
-      "REST API for the CRM lead-management platform: public lead capture, JWT auth, users, groups, orders (leads), and per-order comments. Every error response has the shape `{ status, message }`.",
+      "REST API for the CRM lead-management platform: JWT auth, users, groups, orders (leads), and per-order comments. Only `POST /orders` (public lead capture) and the sign-in/password-link endpoints are available without a token. Every error response has the shape `{ status, message }`.",
   },
   servers: [
     { url: "/", description: "Direct backend access (no path prefix)" },
@@ -319,6 +354,7 @@ export const openApiDocument: OpenAPIV3.Document = {
       User: userSchema,
       UserWithLastLogin: userWithLastLoginSchema,
       PaginatedUsers: paginatedUsersSchema,
+      Statistic: statisticSchema,
       Group: groupSchema,
       Order: orderSchema,
       OrderWithIndex: orderWithIndexSchema,
@@ -483,16 +519,10 @@ export const openApiDocument: OpenAPIV3.Document = {
             },
           },
           "400": errorResponses.BadRequest,
-          "401": errorResponses.Unauthorized,
-          "403": {
-            description:
-              'Account not activated ("Account is not active") or blocked ("Account is blocked").',
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/Error" },
-              },
-            },
-          },
+          "401": errorWith(
+            "Invalid email or password, or the account is not activated yet (the same message on purpose, so the API does not reveal whether an account exists).",
+          ),
+          "403": errorWith('The account is blocked ("Account is blocked").'),
         },
       },
     },
@@ -633,7 +663,12 @@ export const openApiDocument: OpenAPIV3.Document = {
             },
           },
           "400": errorResponses.BadRequest,
-          "401": errorResponses.Unauthorized,
+          "401": errorWith(
+            'Link already used, expired or invalid ("Invalid or expired token" / "Invalid or expired link"). Activation and recovery links are one-time.',
+          ),
+          "403": errorWith(
+            'The target user is blocked ("Target user is blocked").',
+          ),
         },
       },
     },
@@ -670,7 +705,12 @@ export const openApiDocument: OpenAPIV3.Document = {
             },
           },
           "400": errorResponses.BadRequest,
-          "401": errorResponses.Unauthorized,
+          "401": errorWith(
+            'Link already used, expired or invalid ("Invalid or expired token" / "Invalid or expired link"). Activation and recovery links are one-time.',
+          ),
+          "403": errorWith(
+            'The target user is blocked ("Target user is blocked").',
+          ),
         },
       },
     },
@@ -883,7 +923,9 @@ export const openApiDocument: OpenAPIV3.Document = {
               },
             },
           },
-          "400": errorResponses.BadRequest,
+          "400": errorWith(
+            'Validation error, or "Group already exists" if a group with this name exists.',
+          ),
           "401": errorResponses.Unauthorized,
           "403": errorResponses.Forbidden,
         },
@@ -915,6 +957,8 @@ export const openApiDocument: OpenAPIV3.Document = {
       get: {
         tags: ["Orders"],
         summary: "List orders (paginated, filterable, sortable)",
+        description:
+          "Each order includes `managerInfo` (the assigned manager's full name) and `groupName`, so the client needs no extra requests. `dateFrom` / `dateTo` filter by `created_at` (ISO dates).",
         security: [{ bearerAuth: [] }],
         parameters: [
           {
@@ -1017,6 +1061,8 @@ export const openApiDocument: OpenAPIV3.Document = {
         tags: ["Orders"],
         summary:
           "Update an order (restricted to the assigned manager, if one is set)",
+        description:
+          "Status and manager rules: an order with status `New` (or no status) stays unassigned. It becomes `In work` and is assigned to the current manager only if at least one field actually changes. Setting the status back to `New` clears the manager.",
         security: [{ bearerAuth: [] }],
         parameters: [idParam],
         requestBody: {
@@ -1038,7 +1084,9 @@ export const openApiDocument: OpenAPIV3.Document = {
           },
           "400": errorResponses.BadRequest,
           "401": errorResponses.Unauthorized,
-          "403": errorResponses.Forbidden,
+          "403": errorWith(
+            'Not allowed: blocked account, or "Order is assigned to another manager".',
+          ),
           "404": errorResponses.NotFound,
         },
       },
@@ -1047,7 +1095,7 @@ export const openApiDocument: OpenAPIV3.Document = {
         summary:
           "Add a comment to an order (restricted to the assigned manager, if one is set)",
         description:
-          'Note the path: this is "POST /orders/{id}", not "/orders/{id}/comments" — it creates a comment on the order identified by {id}.',
+          'Note the path: this is "POST /orders/{id}", not "/orders/{id}/comments" — it creates a comment on the order identified by {id}. The first comment on a `New` order moves it to `In work` and assigns it to the commenter.',
         security: [{ bearerAuth: [] }],
         parameters: [idParam],
         requestBody: {
@@ -1069,7 +1117,9 @@ export const openApiDocument: OpenAPIV3.Document = {
           },
           "400": errorResponses.BadRequest,
           "401": errorResponses.Unauthorized,
-          "403": errorResponses.Forbidden,
+          "403": errorWith(
+            'Not allowed: blocked account, or "Order is assigned to another manager".',
+          ),
           "404": errorResponses.NotFound,
         },
       },

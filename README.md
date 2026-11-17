@@ -15,7 +15,7 @@ A CRM system for managing course-sales leads ("orders") end to end: capture lead
 
 ## Key Features
 
-[//]: # (- **Public lead capture** — anyone can submit a lead through the `POST /orders` endpoint, no authentication required.)
+- **Public lead capture** — anyone can submit a lead through the `POST /orders` endpoint, no authentication required.
 - **JWT authentication** — short-lived access tokens plus a refresh-token flow.
 - **Role-based access control** — `admin` and `manager` roles with different permissions.
 - **Order lifecycle** — leads move through `New → In work → Agree / Disagree / Dubbing`, with manager assignment and reassignment protection.
@@ -103,15 +103,28 @@ Demo orders are only added when there are no orders yet. You can also create ord
 
 ### Running the apps individually (without Docker)
 
-See [`backend/README.md`](backend/README.md) for running the backend standalone. The frontend is started with `npm install` and `npm run dev` inside the `frontend/` folder (the backend must be running).
+Start the backend first, then the frontend.
+
+**Backend**: see [`backend/README.md`](backend/README.md). It reads the root `.env` and must be started from the `backend/` folder (`cd backend && npm start`); it listens on `http://localhost:5000`.
+
+**Frontend**: see [`frontend/README.md`](frontend/README.md). It needs its own `frontend/.env`:
+
+```bash
+cd frontend
+cp .env.example .env
+npm install
+npm run dev
+```
+
+`frontend/.env` must contain `BASE_URL=http://localhost:5000` (the address of the running backend) and `ACCESS_LIFETIME`. The value `http://backend:5000` from the root `.env` only works inside Docker Compose. The app is then available at **http://localhost:3000**.
 
 ## Environment Variables
 
-All variables are defined in [`.env.example`](.env.example) at the repo root and are shared by every service via `env_file` in `docker-compose.yml`.
+All variables are defined in [`.env.example`](.env.example) at the repo root. With Docker Compose, this one file is shared by every service via `env_file` in `docker-compose.yml`. See [`.env` files](#env-files) below for the standalone setup.
 
 | Variable | Description |
 | --- | --- |
-| `PORT` | Port the backend Express server listens on internally |
+| `PORT` | Port used by the backend and, in Docker, by the frontend too. Must be `5000`: nginx proxies to `frontend:5000` and `backend:5000` |
 | `MONGO_URI` | MongoDB connection string |
 | `JWT_ACCESS_SECRET` | Signing secret for access tokens |
 | `JWT_REFRESH_SECRET` | Signing secret for refresh tokens |
@@ -121,9 +134,20 @@ All variables are defined in [`.env.example`](.env.example) at the repo root and
 | `JWT_ACTIVATE_LIFETIME` | Expiry for account-activation links |
 | `JWT_RECOVERY_SECRET` | Signing secret for password-recovery links |
 | `JWT_RECOVERY_LIFETIME` | Expiry for password-recovery links |
-| `FRONTEND_URL` | Base URL used to build activation/recovery links, which an admin copies and shares with the user through any channel (email, Telegram, etc.) |
+| `FRONTEND_URL` | Base URL used to build activation/recovery links, which an admin copies and shares with the user through any channel (email, Telegram, etc.). With Docker (nginx): `http://localhost:8080`; with the frontend run standalone: `http://localhost:3000` |
 | `BASE_URL` | Backend API base URL used by the frontend (server-side). In Docker: `http://backend:5000` |
 | `ACCESS_LIFETIME` | Lifetime of the access-token cookie on the frontend, in seconds (should match `JWT_ACCESS_LIFETIME`, e.g. `600` for 10 minutes) |
+
+### `.env` files
+
+| Service | Run mode | File used |
+| --- | --- | --- |
+| Backend | Docker Compose | root `.env` (via `env_file`) |
+| Backend | standalone (`cd backend && npm start`) | root `.env` (loaded by `dotenv` via `../.env`) |
+| Frontend | Docker Compose | root `.env` (via `env_file`), `BASE_URL=http://backend:5000` |
+| Frontend | standalone (`cd frontend && npm run dev`) | `frontend/.env`, `BASE_URL=http://localhost:5000` |
+
+Variables set by Docker Compose take priority over `frontend/.env`, so the two setups do not conflict. The backend must be started from the `backend/` folder so that `../.env` resolves to the root `.env`.
 
 ## API Overview
 
@@ -134,7 +158,7 @@ The API is mounted at `/api` (via nginx) and split into four resources:
 | Auth | `/auth` | Public sign-in/refresh; admin-triggered activation & recovery          |
 | Users | `/users` | Admin only                                                             |
 | Groups | `/groups` | Authenticated                                                          |
-| Orders (+ Comments) | `/orders` | Read/update/comment require auth, with manager-assignment restrictions |
+| Orders (+ Comments) | `/orders` | Create is public (`POST /orders`); read/update/comment require auth, with manager-assignment restrictions |
 
 For the full endpoint reference (exact routes, middleware chains, and request/response shapes), see [`backend/README.md`](backend/README.md).
 
@@ -143,12 +167,14 @@ Interactive Swagger/OpenAPI documentation is served by the backend at `/docs` (i
 ## Roles & Access Control
 
 - **admin** — manages users (create, update, role changes, block/unblock), generates account-activation and password-recovery links, and has unrestricted access to orders and groups.
-- **manager** — works orders assigned to them; an unassigned order can be claimed by updating/commenting on it, after which further updates/comments are restricted to that manager.
+- **manager** — works orders. A new order (status `New` or empty) is not assigned to anyone. It moves to `In work` and is assigned to a manager only when that manager actually changes one of its fields or leaves a comment; from then on, only that manager can update or comment on it. Moving an assigned order back to `New` releases it.
 
 ## Error Handling & Blocked Accounts
 
 - Render and server-side request errors are caught by `error.tsx` / `global-error.tsx` ("Something went wrong, contact the administrator") with a retry button.
 - Blocked accounts get `403 "Account is blocked"`: both on sign-in (the message is shown in the login form) and on any request with an active session (an axios interceptor redirects the user to `/login`).
 - Activation/recovery links for a blocked user return `403 "Target user is blocked"`.
+- Signing in with an account that has not been activated yet returns the same `401 "Invalid email or password"` as a wrong password, so the response does not reveal whether such an account exists.
+- Activation and recovery links are one-time: once the password has been set, the same link is rejected by the API with `401 "Invalid or expired token"` (as is an expired or tampered link), and the form shows "This link is no longer valid. Ask the administrator for a new one."
 - Server actions rethrow redirects and show friendly messages for backend failures.
 - Admins cannot block themselves (`403 "No permitted"`) and do not see action buttons on their own card; the admin is always listed first on the managers page.
