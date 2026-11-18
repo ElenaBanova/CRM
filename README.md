@@ -86,7 +86,7 @@ The database starts empty, and the app has no sign-up, so follow these steps:
 1. **Database.** Create a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster (or use a local MongoDB) and copy its connection string.
 2. **Environment.** `cp .env.example .env` and fill in the values (see *Environment Variables* below), including `MONGO_URI`.
 3. **Run.** `docker compose up --build`
-4. **Create the administrator:**
+4. **Create the administrator** (in a new terminal, in the same folder):
    ```bash
    docker compose exec backend npm run seed
    ```
