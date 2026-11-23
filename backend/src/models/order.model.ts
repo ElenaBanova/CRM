@@ -28,7 +28,13 @@ const orderSchema = new Schema(
     group: { type: Schema.Types.ObjectId, ref: "Group" },
     manager: { type: Schema.Types.ObjectId, ref: "User" },
   },
-  { timestamps: true, versionKey: false },
+  {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: true,
+    },
+    versionKey: false,
+  },
 );
 
 orderSchema.index({ manager: 1 });

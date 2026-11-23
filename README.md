@@ -164,6 +164,8 @@ For the full endpoint reference (exact routes, middleware chains, and request/re
 
 Interactive Swagger/OpenAPI documentation is served by the backend at `/docs` (i.e. **http://localhost:8080/api/docs/** via nginx, or directly on the backend's port **http://localhost:5000/docs/** when running the backend without Docker).
 
+A Postman collection is available in [`backend/postman/`](backend/postman/).
+
 ## Roles & Access Control
 
 - **admin** — manages users (create, update, role changes, block/unblock), generates account-activation and password-recovery links, and has unrestricted access to orders and groups.

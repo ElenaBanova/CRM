@@ -72,7 +72,13 @@ export class OrderValidator {
     course_type: this.course_type,
     status: this.status,
     group: joi.string().trim(),
-    manager: joi.string().trim(),
+    manager: joi
+      .string()
+      .trim()
+      .pattern(/^[0-9a-fA-F]{24}$/)
+      .messages({
+        "string.pattern.base": "Invalid manager: must be a 24-character hex id",
+      }),
     order: joi
       .string()
       .valid(
@@ -94,7 +100,13 @@ export class OrderValidator {
     course_type: this.course_type,
     status: this.status,
     group: joi.string().trim(),
-    manager: joi.string().trim(),
+    manager: joi
+      .string()
+      .trim()
+      .pattern(/^[0-9a-fA-F]{24}$/)
+      .messages({
+        "string.pattern.base": "Invalid manager: must be a 24-character hex id",
+      }),
     order: joi
       .string()
       .valid(

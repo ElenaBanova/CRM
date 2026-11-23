@@ -1,6 +1,5 @@
 import { StatusOrdersEnum } from "../enums/status-orders.enum";
 import {
-  IComment,
   ICommentAggregate,
   ICommentCreate,
 } from "../interfaces/comment.interface";
@@ -14,7 +13,7 @@ class CommentService {
     return await commentRepository.getAll(id);
   }
 
-  public async create(commentNew: ICommentCreate): Promise<IComment> {
+  public async create(commentNew: ICommentCreate): Promise<ICommentAggregate> {
     const order = await orderService.getById(commentNew._idOrder);
     orderService.assertCanModify(order, commentNew._userId);
 

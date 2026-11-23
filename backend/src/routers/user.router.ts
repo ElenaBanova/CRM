@@ -28,7 +28,7 @@ router.get(
   "/:id",
   authMiddleware.checkAccessToken,
   authMiddleware.isBlock,
-  // authMiddleware.isAdmin,
+  authMiddleware.isAdmin,
   commonMiddleware.isIdValidate("id"),
   userController.getById,
 );

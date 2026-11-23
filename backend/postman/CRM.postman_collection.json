@@ -1,0 +1,1153 @@
+{
+  "info": {
+    "_postman_id": "0dbf59d2-9cb4-4671-848a-1b73a41c1080",
+    "name": "CRM",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "42329879"
+  },
+  "item": [
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "getAll",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/users?pageSize=10&page=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Admin",
+                  "type": "text",
+                  "uuid": "12c9070e-e2fc-48d7-bdb2-9154007ef2ab"
+                },
+                {
+                  "key": "surname",
+                  "value": "Admin",
+                  "type": "text",
+                  "uuid": "b3cd884c-2963-4a2f-84ca-abc52a15d16c"
+                },
+                {
+                  "key": "email",
+                  "value": "admin@gmail.com",
+                  "type": "text",
+                  "uuid": "457feec0-a6c1-4379-ba0d-1419d32c21fc"
+                },
+                {
+                  "key": "",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "7178315c-0a0b-4648-89b7-c7592d6e4f2b",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/users",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateById",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "b547ae00-54c0-47e4-a2ba-926cb8b4b7ea",
+                  "disabled": true
+                },
+                {
+                  "key": "surname",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "b8f2f8c7-379c-4911-9a57-51b4bb5748f8",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "160c8738-ed85-4f8a-bfc2-f881eb34ab54",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/users/:id",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6a236d3cee89c6071d4d3e5b"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getById",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/users/:id",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6a236d3cee89c6071d4d3e5b"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "role-update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/users/:id/role-update",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "users",
+                ":id",
+                "role-update"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6a236d3cee89c6071d4d3e5b"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ban",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/users/:id/ban",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "users",
+                ":id",
+                "ban"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6ae886d244de4a8eac706924"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "unban",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/users/:id/unban",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "users",
+                ":id",
+                "unban"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6a236d3cee89c6071d4d3e5b"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "sign-in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "if (res.tokens) {\r",
+                  "    pm.environment.set(\"accessToken\", res.tokens.accessToken);\r",
+                  "    pm.environment.set(\"refreshToken\", res.tokens.refreshToken);\r",
+                  "}\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "email",
+                  "value": "admin@gmail.com",
+                  "type": "text",
+                  "uuid": "538bdb1e-7b14-4343-a158-408210d30e3c"
+                },
+                {
+                  "key": "password",
+                  "value": "admin",
+                  "type": "text",
+                  "uuid": "835436b2-34fe-495b-9640-d9d04d2ee0fc"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/sign-in",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "sign-in"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "me",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/me",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "activateURL",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": []
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/activate/:id",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "activate",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "68f1383f36cfe58c716d03c3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "paswordCreate",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "password",
+                  "value": "hhhhhH,1111",
+                  "type": "text",
+                  "uuid": "ac252ce8-e398-48fd-92c4-04b4ab568cdf"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/password/create/:token",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "password",
+                "create",
+                ":token"
+              ],
+              "variable": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGRlZWY4Nzg5YzQwZTAwMTdhYmVkNzkiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc1OTQ0MzM0MCwiZXhwIjoxNzU5NDQ2OTQwfQ.zLMafRls80Nns4FhD0Z8miBYmoKSNgzADbI8lR1y7xM"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "recoveryURL",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/auth/recovery/:id",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "recovery",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "68deef8789c40e0017abed79"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "passwordRecovery",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "password",
+                  "value": "1111Hhhh.",
+                  "type": "text",
+                  "uuid": "4a6d58f0-b791-4ff5-bb17-cd586fb9e480"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/password/recovery/:token",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "password",
+                "recovery",
+                ":token"
+              ],
+              "variable": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGRlZWY4Nzg5YzQwZTAwMTdhYmVkNzkiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc1OTQ0NDExNCwiZXhwIjoxNzU5NDQ0NzE0fQ.wVo-ZDPgeSN7yHArOqHG8PJqvu05pQ0lPk0tm1usznA"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "if (res.tokens) {\r",
+                  "    pm.environment.set(\"accessToken\", res.tokens.accessToken);\r",
+                  "    pm.environment.set(\"refreshToken\", res.tokens.refreshToken);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "refreshToken",
+                  "value": "{{refreshToken}}",
+                  "type": "text",
+                  "uuid": "8034fccb-b8ea-4f06-afaa-45c418210c76"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/refresh",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "groups",
+      "item": [
+        {
+          "name": "getAll",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/groups",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "groups"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "0000000000",
+                  "type": "text",
+                  "uuid": "02f62315-d248-4899-8031-4aed47105d82"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/groups",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "groups"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getById",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/groups/:id",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "groups",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6a53be77ab4af1f249f93959"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "item": [
+        {
+          "name": "getAll",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/orders?pageSize=25&page=1&name=ol",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "pageSize",
+                  "value": "25"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "order",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "surname",
+                  "value": "anov",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "phone",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "age",
+                  "value": "15",
+                  "disabled": true
+                },
+                {
+                  "key": "course",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "course_format",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "course_type",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "new",
+                  "disabled": true
+                },
+                {
+                  "key": "group",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "ol"
+                },
+                {
+                  "key": "dateFrom",
+                  "value": "2026-10-01",
+                  "disabled": true
+                },
+                {
+                  "key": "dateTo",
+                  "value": "2026-10-31",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Olena"
+                },
+                {
+                  "key": "surname",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "phone",
+                  "value": ""
+                },
+                {
+                  "key": "age",
+                  "value": "15",
+                  "disabled": true
+                },
+                {
+                  "key": "course",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "course_format",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "course_type",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "sum",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "already_paid",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "utm",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "msg",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getById",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/orders/:id",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "68ea9fa51f129c5c5fcebef4"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateById",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Mish"
+                },
+                {
+                  "key": "surname",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "phone",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "age",
+                  "value": "22",
+                  "disabled": true
+                },
+                {
+                  "key": "course",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "course_format",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "course_type",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "sum",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "already_paid",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "New"
+                },
+                {
+                  "key": "group",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders/:id",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllOrderComents",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/orders/:id/comments",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                ":id",
+                "comments"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "68ea9fa51f129c5c5fcebef4"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createComment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "comment",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "87d347ab-b85f-42b0-af61-a68c5b64a903"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders/:id",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "68ea9fa51f129c5c5fcebef4"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ordersForExcel",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/orders/excel",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                "excel"
+              ],
+              "query": [
+                {
+                  "key": "dateFrom",
+                  "value": "2026-10-01",
+                  "disabled": true
+                },
+                {
+                  "key": "dateTo",
+                  "value": "2026-10-31",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -167,6 +167,10 @@ for example, with `PORT=5000` that's `http://localhost:5000/docs`. Through nginx
 
 There you can browse every endpoint, request/response schemas, and send test requests straight from the browser (for protected routes, click "Authorize" and paste in an access token).
 
+## Postman Collection
+
+A ready-to-import Postman collection is in [`postman/`](postman/). Import `CRM.postman_collection.json` (and `CRM.postman_environment.json`) into Postman, set the base URL variable to `http://localhost:5000` (backend run standalone) or `http://localhost:8080/api` (Docker), and sign in with `POST /auth/sign-in` first; the other requests use the saved access token.
+
 ## Full Endpoint Reference
 
 Base URL without Docker: `http://localhost:<PORT>` (routes are mounted with no `/api` prefix — only nginx adds the `/api` prefix externally).

@@ -12,6 +12,7 @@ type ICommentCreate = Pick<IComment, "comment" | "_userId" | "_idOrder">;
 interface ICommentAggregate {
   _id: string;
   comment: string;
+  _userId: string;
   userName: string;
   userSurname: string;
   _idOrder: string;

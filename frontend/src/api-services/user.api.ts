@@ -18,11 +18,6 @@ const userService = {
         return data;
     },
 
-    async getByIdClient(userId: string): Promise<IUser> {
-        const {data: user} = await axiosClient.get<IUser>(urls.users + '/' + userId);
-        return user
-    },
-
     async banUnbanManager(userId: string, action: string): Promise<IUser> {
         const {data: user} = await axiosClient.patch<IUser>(urls.users + '/' + userId + '/' + action);
         return user
