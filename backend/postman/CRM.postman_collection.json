@@ -748,6 +748,10 @@
                   "disabled": true
                 },
                 {
+                  "key": "name",
+                  "value": "ol"
+                },
+                {
                   "key": "surname",
                   "value": "anov",
                   "disabled": true
@@ -793,8 +797,9 @@
                   "disabled": true
                 },
                 {
-                  "key": "name",
-                  "value": "ol"
+                  "key": "manager",
+                  "value": "",
+                  "disabled": true
                 },
                 {
                   "key": "dateFrom",
@@ -1132,6 +1137,66 @@
                 "excel"
               ],
               "query": [
+                {
+                  "key": "order",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "surname",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "phone",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "age",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "course",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "course_format",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "course_type",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "group",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "manager",
+                  "value": "",
+                  "disabled": true
+                },
                 {
                   "key": "dateFrom",
                   "value": "2026-10-01",
