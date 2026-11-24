@@ -438,7 +438,7 @@
           "response": []
         },
         {
-          "name": "paswordCreate",
+          "name": "passwordCreate",
           "request": {
             "auth": {
               "type": "noauth"
@@ -470,7 +470,7 @@
               "variable": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGRlZWY4Nzg5YzQwZTAwMTdhYmVkNzkiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc1OTQ0MzM0MCwiZXhwIjoxNzU5NDQ2OTQwfQ.zLMafRls80Nns4FhD0Z8miBYmoKSNgzADbI8lR1y7xM"
+                  "value": ""
                 }
               ]
             }
@@ -545,7 +545,7 @@
               "variable": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGRlZWY4Nzg5YzQwZTAwMTdhYmVkNzkiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc1OTQ0NDExNCwiZXhwIjoxNzU5NDQ0NzE0fQ.wVo-ZDPgeSN7yHArOqHG8PJqvu05pQ0lPk0tm1usznA"
+                  "value": ""
                 }
               ]
             }

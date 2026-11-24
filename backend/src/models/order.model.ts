@@ -27,10 +27,14 @@ const orderSchema = new Schema(
     msg: { type: String },
     group: { type: Schema.Types.ObjectId, ref: "Group" },
     manager: { type: Schema.Types.ObjectId, ref: "User" },
+    created_at: {
+      type: String,
+      default: () => new Date().toISOString(),
+    },
   },
   {
     timestamps: {
-      createdAt: "created_at",
+      createdAt: false,
       updatedAt: true,
     },
     versionKey: false,

@@ -193,12 +193,10 @@ Base URL without Docker: `http://localhost:<PORT>` (routes are mounted with no `
 | --- |--------------------------| --- | --- |
 | GET | `/users` | admin only | query: `page`, `pageSize` (paginated) |
 | POST | `/users`                 | admin only | `{ name, surname, email }` (all required) |
-| GET | `/users/:id`             | any authenticated user | — |
+| GET | `/users/:id`             | admin only | — |
 | PATCH | `/users/:id`             | admin only | `{ name?, surname?, email? }` |
 | PATCH | `/users/:id/role-update` | admin only | — (toggles role admin ⇄ manager) |
 | PATCH | `/users/:id/:action` | admin only, can't block yourself | — (`:action` is `ban` or `unban`; sets the `blockUser` flag accordingly) |
-
-> `GET /users/:id` is marked in the code as accessible to any authenticated user (the admin check is commented out) — this is the current behavior, not a documentation mistake.
 
 > `GET /users` is paginated (`page`, `pageSize` query parameters). The response has the shape `{ totalItems, totalPages, prevPage, nextPage, data, totalStatistic }`, default `pageSize` is `10`. The current admin is always returned first on the first page; the remaining users follow in descending `_id` order. Each user also includes:
 > - `rowNumber` — the user's sequential number (based on creation order, stays the same regardless of the page);

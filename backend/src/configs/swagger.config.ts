@@ -777,7 +777,7 @@ export const openApiDocument: OpenAPIV3.Document = {
     "/users/{id}": {
       get: {
         tags: ["Users"],
-        summary: "Get a user by id",
+        summary: "Get a user by id (admin only)",
         security: [{ bearerAuth: [] }],
         parameters: [idParam],
         responses: {
