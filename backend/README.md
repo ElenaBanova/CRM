@@ -169,7 +169,7 @@ There you can browse every endpoint, request/response schemas, and send test req
 
 ## Postman Collection
 
-A ready-to-import Postman collection is in [`postman/`](postman/). Import `CRM.postman_collection.json` (and `CRM.postman_environment.json`) into Postman, set the base URL variable to `http://localhost:5000` (backend run standalone) or `http://localhost:8080/api` (Docker), and sign in with `POST /auth/sign-in` first; the other requests use the saved access token.
+A ready-to-import Postman collection is in [`postman/`](postman/). Import `CRM.postman_collection.json` (and `CRM.postman_environment.json`) into Postman, set the baseURL variable to `http://localhost:5000` (backend run standalone) or `http://localhost:8080/api` (Docker), and sign in with `POST /auth/sign-in` first; the other requests use the saved access token.
 
 ## Full Endpoint Reference
 
