@@ -20,7 +20,7 @@ interface IOrder {
   status: StatusOrdersEnum;
   group: string;
   manager: string;
-  created_at: Date;
+  created_at: string;
   updatedAt: Date;
 }
 
@@ -68,7 +68,7 @@ interface IOrderQuery {
   course_format?: FormatCoursesEnum;
   course_type?: TypeCoursesEnum;
   status?: StatusOrdersEnum;
-  created_at?: Date;
+  created_at?: string;
   group?: string;
   order?: string;
   manager?: string;
@@ -94,7 +94,7 @@ interface IOrderWithIndex {
   status: StatusOrdersEnum;
   group?: string;
   manager?: string;
-  created_at: Date;
+  created_at: string;
   updatedAt: Date;
 }
 
