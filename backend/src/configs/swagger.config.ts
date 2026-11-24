@@ -253,7 +253,8 @@ const orderQueryParameters: OpenAPIV3.ParameterObject[] = [
     name: "manager",
     in: "query",
     schema: { type: "string" },
-    description: "Filter by assigned manager ObjectId.",
+    description:
+      'Filter by assigned manager id (24-character hex). An invalid value returns 400 ("Invalid manager: must be a 24-character hex id").',
   },
   {
     name: "order",
